@@ -90,6 +90,70 @@ function calculateFallbackAnalysis(profile: any, opportunity: any) {
   };
 }
 
+// Fallback application generator based strictly on student's verified profile data
+function calculateFallbackApplication(profile: any, opportunity: any) {
+  const studentSkills = (profile.skills || []).length > 0
+    ? profile.skills.slice(0, 5).join(', ')
+    : 'core computing and analytical problem-solving';
+
+  const matchedSkills = (profile.skills || []).filter((s: string) =>
+    (opportunity.requiredSkills || []).some((req: string) =>
+      req.toLowerCase().includes(s.toLowerCase()) || s.toLowerCase().includes(req.toLowerCase())
+    )
+  );
+
+  const keySkills = matchedSkills.length > 0
+    ? matchedSkills.slice(0, 4).join(', ')
+    : studentSkills;
+
+  const projectText = (profile.projects || []).length > 0
+    ? profile.projects.join(' and ')
+    : 'practical coursework and lab implementations';
+
+  const studentName = profile.fullName || 'Student Applicant';
+  const degreeInfo = `${profile.currentYear || '3rd Year'} ${profile.educationDegree || 'Undergraduate'} student in ${profile.branchField || 'Computer Science & Engineering'}`;
+
+  const resumeSummary = `Motivated ${degreeInfo} with demonstrated skills in ${keySkills}. Eager to leverage hands-on project experience in ${projectText} and a strong commitment to learning to contribute effectively to the ${opportunity.title} role at ${opportunity.organization}.`;
+
+  const coverLetter = `Dear Hiring Team at ${opportunity.organization},
+
+I am writing to formally express my interest in the ${opportunity.title} position. As a ${degreeInfo}, I have cultivated a strong foundation in ${studentSkills}, with particular enthusiasm for ${opportunity.field}.
+
+Throughout my academic coursework and project work—including ${projectText}—I have focused on building practical, structured solutions and collaborating effectively. My profile directly aligns with your requirements in ${keySkills}, and my long-term goal of becoming a ${profile.careerGoal || 'technology professional'} motivates me to deliver rigorous, dependable work.
+
+I am inspired by ${opportunity.organization}'s work and would be thrilled to bring my proactive attitude, technical foundation, and dedication to your team. Thank you for considering my application, and I look forward to discussing how I can contribute.
+
+Sincerely,
+${studentName}`;
+
+  const applicationEmail = {
+    subject: `Application for ${opportunity.title} - ${studentName}`,
+    body: `Dear ${opportunity.organization} Hiring Team,
+
+I hope this email finds you well.
+
+I am writing to submit my application for the ${opportunity.title} opening at ${opportunity.organization}. I am currently a ${degreeInfo}, with strong competencies in ${keySkills}.
+
+I have attached my updated resume and portfolio for your consideration, detailing my academic background and key project work including ${projectText}. I would welcome the opportunity to discuss how my skill set and enthusiasm can support your team's objectives.
+
+Thank you very much for your time and consideration.
+
+Warm regards,
+
+${studentName}
+${profile.educationDegree || 'Undergraduate'} | ${profile.branchField || 'Computer Science'}`,
+  };
+
+  return {
+    opportunityId: opportunity.id,
+    resumeSummary,
+    coverLetter,
+    applicationEmail,
+    generatedAt: new Date().toISOString(),
+    isAiGenerated: false,
+  };
+}
+
 // API Route: AI Opportunity Match Analysis
 app.post('/api/match-opportunity', async (req, res) => {
   const { profile, opportunity } = req.body;
@@ -221,6 +285,134 @@ Return structured analysis:
       ...fallback,
       opportunityId: opportunity.id,
       analyzedAt: new Date().toISOString(),
+      fallbackDueToError: true,
+      errorMessage: err.message || 'Gemini service temporary issue',
+    });
+  }
+});
+
+// API Route: AI Application Materials Generator (Resume Summary, Cover Letter, Application Email)
+app.post('/api/generate-application', async (req, res) => {
+  const { profile, opportunity } = req.body;
+
+  if (!opportunity) {
+    return res.status(400).json({ error: 'Opportunity data is required.' });
+  }
+
+  const studentProfile = profile || {
+    fullName: 'Student Applicant',
+    educationDegree: 'Undergraduate',
+    branchField: 'Computer Science & Engineering',
+    currentYear: '3rd Year',
+    skills: ['Python', 'Data Structures', 'Git'],
+    interests: ['Software Development', 'AI'],
+    careerGoal: 'Software Engineer',
+    projects: ['Web Application Project'],
+    certifications: [],
+  };
+
+  const ai = getGeminiClient();
+
+  // If Gemini client is not configured, return calculated fallback immediately
+  if (!ai) {
+    const fallback = calculateFallbackApplication(studentProfile, opportunity);
+    return res.json(fallback);
+  }
+
+  try {
+    const prompt = `You are PathPilot's Autonomous AI Career Application Assistant for students.
+Your task is to generate professional, tailored, student-appropriate job application materials for a student applying to a specific opportunity.
+
+CRITICAL INSTRUCTIONS & STRICT BOUNDARIES:
+1. Base all generated text STRICTLY and EXCLUSIVELY on the student's actual provided profile details and the opportunity requirements.
+2. DO NOT invent fake past employers, fictitious internships, made-up metrics (like "increased revenue by 40%"), non-existent certificates, or unlisted technical skills.
+3. Reference the student's actual academic background (${studentProfile.educationDegree} in ${studentProfile.branchField}, ${studentProfile.currentYear}), their actual listed skills, and their real projects.
+4. Tone must be professional, enthusiastic, articulate, and appropriate for an ambitious early-career student or new graduate.
+
+STUDENT PROFILE (SOURCE OF TRUTH):
+- Full Name: ${studentProfile.fullName || 'Student Applicant'}
+- Education Degree: ${studentProfile.educationDegree || 'Undergraduate'}
+- Field / Branch: ${studentProfile.branchField || 'Computer Science & Engineering'}
+- Academic Year: ${studentProfile.currentYear || '3rd Year'}
+- Skills: ${(studentProfile.skills || []).join(', ') || 'Computer Science fundamentals'}
+- Interests: ${(studentProfile.interests || []).join(', ') || 'Technology & Software'}
+- Target Career Goal: ${studentProfile.careerGoal || 'Software Engineer'}
+- Projects: ${(studentProfile.projects || []).join('; ') || 'Coursework projects'}
+- Certifications: ${(studentProfile.certifications || []).join('; ') || 'None listed'}
+
+TARGET OPPORTUNITY:
+- Title: ${opportunity.title}
+- Organization: ${opportunity.organization}
+- Category: ${opportunity.category}
+- Field: ${opportunity.field}
+- Required Skills: ${(opportunity.requiredSkills || []).join(', ')}
+- Preferred Skills: ${(opportunity.preferredSkills || []).join(', ')}
+- Location & Type: ${opportunity.location} (${opportunity.type})
+- Summary: ${opportunity.summary}
+- Description: ${opportunity.description}
+
+GENERATE:
+1. "resumeSummary": A high-impact, professional 2-3 sentence summary tailored for the header of a student resume for this role.
+2. "coverLetter": A complete, polished 3-4 paragraph cover letter addressed to the hiring team at ${opportunity.organization}. Connect the student's verified background and projects to the role's needs.
+3. "applicationEmail": An object with:
+   - "subject": A crisp, professional email subject line for the application.
+   - "body": A courteous, concise 2-3 paragraph application email with salutation, key qualifications summary, mention of attached resume/portfolio, and professional sign-off.`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.7-flash',
+      contents: prompt,
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            resumeSummary: {
+              type: Type.STRING,
+              description: 'A 2-3 sentence tailored professional resume summary using verified student data',
+            },
+            coverLetter: {
+              type: Type.STRING,
+              description: 'A full 3-4 paragraph formal cover letter for this opportunity',
+            },
+            applicationEmail: {
+              type: Type.OBJECT,
+              properties: {
+                subject: {
+                  type: Type.STRING,
+                  description: 'Professional subject line for application email',
+                },
+                body: {
+                  type: Type.STRING,
+                  description: 'Polished body text for the outreach/application email',
+                },
+              },
+              required: ['subject', 'body'],
+            },
+          },
+          required: ['resumeSummary', 'coverLetter', 'applicationEmail'],
+        },
+      },
+    });
+
+    const responseText = response.text ? response.text.trim() : '';
+    const parsedData = JSON.parse(responseText);
+
+    return res.json({
+      opportunityId: opportunity.id,
+      resumeSummary: parsedData.resumeSummary || '',
+      coverLetter: parsedData.coverLetter || '',
+      applicationEmail: {
+        subject: parsedData.applicationEmail?.subject || `Application: ${opportunity.title} - ${studentProfile.fullName}`,
+        body: parsedData.applicationEmail?.body || '',
+      },
+      generatedAt: new Date().toISOString(),
+      isAiGenerated: true,
+    });
+  } catch (err: any) {
+    console.error('Error calling Gemini API for application generation:', err);
+    const fallback = calculateFallbackApplication(studentProfile, opportunity);
+    return res.json({
+      ...fallback,
       fallbackDueToError: true,
       errorMessage: err.message || 'Gemini service temporary issue',
     });

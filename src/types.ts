@@ -52,3 +52,15 @@ export interface AIMatchAnalysis {
   analyzedAt: string;
   isAiGenerated: boolean;
 }
+
+export interface AIApplicationMaterials {
+  opportunityId: string;
+  resumeSummary: string;
+  coverLetter: string;
+  applicationEmail: {
+    subject: string;
+    body: string;
+  };
+  generatedAt: string;
+  isAiGenerated: boolean;
+}

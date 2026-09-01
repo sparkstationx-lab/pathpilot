@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { Opportunity, StudentProfile, AIMatchAnalysis } from '../types';
 import { analyzeOpportunityFit } from '../services/geminiService';
+import { AIApplicationGenerator } from './AIApplicationGenerator';
 
 interface OpportunityDetailProps {
   opportunity: Opportunity;
@@ -382,6 +383,17 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
       </section>
 
       {/* ========================================================================= */}
+      {/* AI APPLICATION GENERATOR SUITE */}
+      {/* ========================================================================= */}
+      <div className="mb-8">
+        <AIApplicationGenerator 
+          opportunity={opportunity} 
+          profile={profile} 
+          onEditProfile={onEditProfile} 
+        />
+      </div>
+
+      {/* ========================================================================= */}
       {/* COMPLETE OPPORTUNITY DETAILS & REQUIREMENTS */}
       {/* ========================================================================= */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -476,17 +488,24 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
               Application Workflow
             </h4>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Use this AI fit report to customize your resume and cover letter before submitting.
+              Use Gemini AI to instantly generate a tailored resume summary, cover letter, and application outreach email.
             </p>
             <button
-              onClick={() => alert(`Application preparation checklist generated for ${opportunity.title}. Review required skills and submit on the ${opportunity.organization} portal before ${opportunity.deadline}.`)}
-              className="w-full py-2.5 px-4 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-sm transition-colors shadow-md shadow-emerald-950/40"
+              id="sidebar-generate-application-btn"
+              onClick={() => {
+                const el = document.getElementById('ai-application-generator-section');
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className="w-full py-2.5 px-4 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-sm transition-colors shadow-md shadow-emerald-950/40 cursor-pointer flex items-center justify-center gap-2"
             >
-              Prepare Application
+              <Sparkles className="w-4 h-4 text-slate-950" />
+              <span>Generate Application Suite</span>
             </button>
             <button
               onClick={onBack}
-              className="w-full py-2 px-4 rounded-lg bg-slate-800/80 hover:bg-slate-800 text-slate-300 font-medium text-xs border border-slate-700/70 transition-colors"
+              className="w-full py-2 px-4 rounded-lg bg-slate-800/80 hover:bg-slate-800 text-slate-300 font-medium text-xs border border-slate-700/70 transition-colors cursor-pointer"
             >
               Browse Other Opportunities
             </button>
