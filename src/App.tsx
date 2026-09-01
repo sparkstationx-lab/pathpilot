@@ -12,6 +12,7 @@ import { VisualFlow } from './components/VisualFlow';
 import { Capabilities } from './components/Capabilities';
 import { HowItWorks } from './components/HowItWorks';
 import { CareerProfile } from './components/CareerProfile';
+import { AICareerDashboard } from './components/AICareerDashboard';
 import { OpportunitiesList } from './components/OpportunitiesList';
 import { OpportunityDetail } from './components/OpportunityDetail';
 import { Footer } from './components/Footer';
@@ -130,6 +131,31 @@ export default function App() {
               setCurrentView('opportunities');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
+            onViewDashboard={() => {
+              setCurrentView('dashboard');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          />
+        )}
+
+        {currentView === 'dashboard' && (
+          <AICareerDashboard
+            profile={profile}
+            opportunities={OPPORTUNITIES}
+            cachedAnalyses={cachedAnalyses}
+            onSelectOpportunity={handleSelectOpportunity}
+            onNavigateToProfile={() => {
+              setCurrentView('profile');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onNavigateToOpportunities={() => {
+              setCurrentView('opportunities');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onNavigate={(view) => {
+              setCurrentView(view);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           />
         )}
 
@@ -141,6 +167,10 @@ export default function App() {
             onSelectOpportunity={handleSelectOpportunity}
             onNavigateToProfile={() => {
               setCurrentView('profile');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onNavigateToDashboard={() => {
+              setCurrentView('dashboard');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
           />

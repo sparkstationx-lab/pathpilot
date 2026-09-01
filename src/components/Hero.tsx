@@ -60,12 +60,12 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onScrollToSection }) => 
           className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-8"
         >
           <button
-            id="hero-explore-cta"
-            onClick={() => onNavigate('opportunities')}
+            id="hero-dashboard-cta"
+            onClick={() => onNavigate('dashboard')}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition-all duration-200 shadow-lg shadow-emerald-500/20 active:scale-98 text-sm sm:text-base cursor-pointer"
           >
-            <Compass className="w-4 h-4" />
-            <span>Explore Matched Opportunities</span>
+            <Sparkles className="w-4 h-4 text-slate-950" />
+            <span>Open AI Career Dashboard</span>
             <ArrowRight className="w-4 h-4" />
           </button>
 
@@ -74,7 +74,16 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onScrollToSection }) => 
             onClick={() => onNavigate('profile')}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-medium text-slate-200 bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/70 hover:border-slate-600 transition-all duration-200 text-sm sm:text-base cursor-pointer"
           >
-            <span>My Career Profile</span>
+            <span>Career Profile</span>
+          </button>
+
+          <button
+            id="hero-explore-cta"
+            onClick={() => onNavigate('opportunities')}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl font-medium text-slate-300 hover:text-white bg-slate-900/40 hover:bg-slate-800/60 border border-slate-800 transition-all duration-200 text-sm sm:text-base cursor-pointer"
+          >
+            <Compass className="w-4 h-4" />
+            <span>Opportunities</span>
           </button>
         </motion.div>
 

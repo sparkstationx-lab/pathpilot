@@ -28,7 +28,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onScrollToSection })
           </div>
 
           {/* Quick links */}
-          <div className="flex items-center gap-6 text-xs text-slate-400">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs text-slate-400">
             <button
               onClick={() => onNavigate('landing')}
               className="hover:text-slate-200 transition-colors"
@@ -36,22 +36,22 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onScrollToSection })
               Overview
             </button>
             <button
-              onClick={() => onScrollToSection('how-it-works')}
-              className="hover:text-slate-200 transition-colors"
-            >
-              How It Works
-            </button>
-            <button
-              onClick={() => onScrollToSection('capabilities')}
-              className="hover:text-slate-200 transition-colors"
-            >
-              Capabilities
-            </button>
-            <button
               onClick={() => onNavigate('profile')}
+              className="hover:text-slate-200 transition-colors"
+            >
+              Career Profile
+            </button>
+            <button
+              onClick={() => onNavigate('dashboard')}
               className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors"
             >
-              Build Profile
+              AI Dashboard
+            </button>
+            <button
+              onClick={() => onNavigate('opportunities')}
+              className="hover:text-slate-200 transition-colors"
+            >
+              Opportunities
             </button>
           </div>
         </div>

@@ -1,4 +1,4 @@
-export type PageView = 'landing' | 'profile' | 'opportunities' | 'opportunity-detail';
+export type PageView = 'landing' | 'profile' | 'dashboard' | 'opportunities' | 'opportunity-detail';
 
 export interface StudentProfile {
   // 1. Basic Information

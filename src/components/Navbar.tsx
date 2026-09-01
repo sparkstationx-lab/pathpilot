@@ -32,24 +32,50 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, onScrol
         </button>
 
         {/* Navigation Links */}
-        <nav className="flex items-center gap-2 sm:gap-4">
+        <nav className="flex items-center gap-1.5 sm:gap-3">
           <button
             id="nav-overview-btn"
             onClick={() => onNavigate('landing')}
-            className={`text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+            className={`text-xs sm:text-sm font-medium px-2.5 sm:px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
               currentView === 'landing'
                 ? 'text-emerald-400 bg-slate-800/80 border border-slate-700/60'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             <Home className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Overview</span>
+            <span className="hidden md:inline">Overview</span>
+          </button>
+
+          <button
+            id="nav-profile-btn"
+            onClick={() => onNavigate('profile')}
+            className={`text-xs sm:text-sm font-medium px-2.5 sm:px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+              currentView === 'profile'
+                ? 'text-emerald-400 bg-slate-800/80 border border-slate-700/60'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <User className="w-3.5 h-3.5" />
+            <span>Profile</span>
+          </button>
+
+          <button
+            id="nav-dashboard-btn"
+            onClick={() => onNavigate('dashboard')}
+            className={`text-xs sm:text-sm font-medium px-2.5 sm:px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+              currentView === 'dashboard'
+                ? 'text-emerald-400 bg-slate-800/80 border border-slate-700/60'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+            <span>AI Dashboard</span>
           </button>
 
           <button
             id="nav-opportunities-btn"
             onClick={() => onNavigate('opportunities')}
-            className={`text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+            className={`text-xs sm:text-sm font-medium px-2.5 sm:px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
               currentView === 'opportunities' || currentView === 'opportunity-detail'
                 ? 'text-emerald-400 bg-slate-800/80 border border-slate-700/60'
                 : 'text-slate-400 hover:text-slate-200'
@@ -57,19 +83,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, onScrol
           >
             <Compass className="w-3.5 h-3.5" />
             <span>Opportunities</span>
-          </button>
-
-          <button
-            id="nav-profile-btn"
-            onClick={() => onNavigate('profile')}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
-              currentView === 'profile'
-                ? 'bg-emerald-500 text-slate-950 font-semibold shadow-sm shadow-emerald-500/20'
-                : 'text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60'
-            }`}
-          >
-            <User className="w-3.5 h-3.5" />
-            <span>Career Profile</span>
           </button>
         </nav>
       </div>

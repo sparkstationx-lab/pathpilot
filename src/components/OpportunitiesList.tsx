@@ -20,6 +20,7 @@ interface OpportunitiesListProps {
   cachedAnalyses: Record<string, AIMatchAnalysis>;
   onSelectOpportunity: (opp: Opportunity) => void;
   onNavigateToProfile: () => void;
+  onNavigateToDashboard?: () => void;
 }
 
 export const OpportunitiesList: React.FC<OpportunitiesListProps> = ({
@@ -28,6 +29,7 @@ export const OpportunitiesList: React.FC<OpportunitiesListProps> = ({
   cachedAnalyses,
   onSelectOpportunity,
   onNavigateToProfile,
+  onNavigateToDashboard,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -80,14 +82,27 @@ export const OpportunitiesList: React.FC<OpportunitiesListProps> = ({
           </div>
         </div>
 
-        <button
-          id="update-profile-banner-btn"
-          onClick={onNavigateToProfile}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 bg-slate-800/80 hover:bg-slate-800 px-3.5 py-2 rounded-lg border border-slate-700/80 transition-all self-start sm:self-auto shrink-0"
-        >
-          <span>Update Career Profile</span>
-          <ArrowRight className="w-3.5 h-3.5" />
-        </button>
+        <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+          {onNavigateToDashboard && (
+            <button
+              id="opportunities-to-dashboard-btn"
+              onClick={onNavigateToDashboard}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 bg-emerald-950/40 hover:bg-emerald-950/70 px-3 py-2 rounded-lg border border-emerald-800/50 transition-all"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>AI Dashboard</span>
+            </button>
+          )}
+
+          <button
+            id="update-profile-banner-btn"
+            onClick={onNavigateToProfile}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-slate-100 bg-slate-800/80 hover:bg-slate-800 px-3.5 py-2 rounded-lg border border-slate-700/80 transition-all"
+          >
+            <span>Update Profile</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
 
       {/* Header, Search & Filters */}

@@ -21,6 +21,7 @@ import { StudentProfile } from '../types';
 interface CareerProfileProps {
   onBack: () => void;
   onExploreOpportunities?: () => void;
+  onViewDashboard?: () => void;
 }
 
 const STORAGE_KEY = 'autonomous_career_agent_profile';
@@ -75,7 +76,11 @@ const SUGGESTED_INTERESTS = [
   'Product Design',
 ];
 
-export const CareerProfile: React.FC<CareerProfileProps> = ({ onBack, onExploreOpportunities }) => {
+export const CareerProfile: React.FC<CareerProfileProps> = ({ 
+  onBack, 
+  onExploreOpportunities,
+  onViewDashboard,
+}) => {
   const [profile, setProfile] = useState<StudentProfile>(INITIAL_PROFILE);
   const [newSkill, setNewSkill] = useState('');
   const [newInterest, setNewInterest] = useState('');
@@ -227,13 +232,24 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({ onBack, onExploreO
         </button>
 
         <div className="flex items-center gap-2">
+          {onViewDashboard && (
+            <button
+              id="profile-view-dashboard-top-btn"
+              onClick={onViewDashboard}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-400 hover:text-emerald-300 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 transition-all cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>AI Dashboard</span>
+            </button>
+          )}
+
           {onExploreOpportunities && (
             <button
               onClick={onExploreOpportunities}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-400 hover:text-emerald-300 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 transition-all"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-slate-100 bg-slate-900 hover:bg-slate-800 border border-slate-800 transition-all cursor-pointer"
             >
               <Compass className="w-3.5 h-3.5" />
-              <span>Explore Opportunities</span>
+              <span>Opportunities</span>
             </button>
           )}
 
@@ -281,15 +297,26 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({ onBack, onExploreO
               <p className="text-xs text-emerald-400/80">Your profile is safely stored locally and ready for Gemini AI opportunity matching.</p>
             </div>
           </div>
-          {onExploreOpportunities && (
-            <button
-              onClick={onExploreOpportunities}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs transition-colors shrink-0 shadow-sm"
-            >
-              <span>View Matched Opportunities</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          )}
+          <div className="flex items-center gap-2.5 self-start sm:self-auto shrink-0">
+            {onViewDashboard && (
+              <button
+                id="saved-view-dashboard-btn"
+                onClick={onViewDashboard}
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs transition-colors shrink-0 shadow-sm cursor-pointer"
+              >
+                <span>Go to AI Dashboard</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            )}
+            {onExploreOpportunities && (
+              <button
+                onClick={onExploreOpportunities}
+                className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 font-semibold text-xs border border-slate-700 transition-colors shrink-0 cursor-pointer"
+              >
+                <span>Opportunities</span>
+              </button>
+            )}
+          </div>
         </div>
       )}
 
