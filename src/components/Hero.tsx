@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Sparkles, ArrowRight, HelpCircle, Compass, GraduationCap, CheckCircle2 } from 'lucide-react';
+import { Sparkles, ArrowRight, Compass, HelpCircle, CheckCircle2 } from 'lucide-react';
 import { PageView } from '../types';
 
 interface HeroProps {
@@ -26,7 +26,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onScrollToSection }) => 
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
-          <span>AI-Powered Career Assistant</span>
+          <span>Gemini AI Opportunity Matching</span>
         </motion.div>
 
         {/* Main Heading */}
@@ -36,7 +36,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onScrollToSection }) => 
           transition={{ duration: 0.4, delay: 0.1 }}
           className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-100 leading-[1.15] mb-6"
         >
-          Find the Right Career Opportunities{' '}
+          Discover & Match Career Opportunities{' '}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200">
             Tailored to Your Profile
           </span>
@@ -49,7 +49,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onScrollToSection }) => 
           transition={{ duration: 0.4, delay: 0.2 }}
           className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed mb-8"
         >
-          Stop searching scattered platforms. Career Agent analyzes your skills, interests, and academic background to discover matching internships, jobs, scholarships, and certifications with clear eligibility insights.
+          PathPilot analyzes your skills, interests, and academic background using Gemini AI to generate match scores, eligibility assessments, and actionable skill gap recommendations for top internships, jobs, scholarships, and certifications.
         </motion.p>
 
         {/* Primary & Secondary CTAs */}
@@ -60,21 +60,21 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onScrollToSection }) => 
           className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-8"
         >
           <button
-            id="hero-primary-cta"
-            onClick={() => onNavigate('profile')}
+            id="hero-explore-cta"
+            onClick={() => onNavigate('opportunities')}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition-all duration-200 shadow-lg shadow-emerald-500/20 active:scale-98 text-sm sm:text-base cursor-pointer"
           >
-            <span>Build My Career Profile</span>
+            <Compass className="w-4 h-4" />
+            <span>Explore Matched Opportunities</span>
             <ArrowRight className="w-4 h-4" />
           </button>
 
           <button
-            id="hero-secondary-cta"
-            onClick={() => onScrollToSection('how-it-works')}
+            id="hero-profile-cta"
+            onClick={() => onNavigate('profile')}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-medium text-slate-200 bg-slate-900/80 hover:bg-slate-800/90 border border-slate-700/70 hover:border-slate-600 transition-all duration-200 text-sm sm:text-base cursor-pointer"
           >
-            <HelpCircle className="w-4 h-4 text-emerald-400" />
-            <span>How It Works</span>
+            <span>My Career Profile</span>
           </button>
         </motion.div>
 
@@ -87,15 +87,15 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onScrollToSection }) => 
         >
           <span className="flex items-center gap-1.5">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Internships, Jobs & Scholarships</span>
+            <span>Internships, Jobs, Scholarships & Certifications</span>
           </span>
           <span className="flex items-center gap-1.5">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Skill Match & Gap Analysis</span>
+            <span>Gemini AI Match Score (0–100)</span>
           </span>
           <span className="flex items-center gap-1.5">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Custom Application Materials</span>
+            <span>Targeted Skill Gaps & Strengths</span>
           </span>
         </motion.div>
       </div>

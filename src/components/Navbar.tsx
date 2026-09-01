@@ -1,11 +1,11 @@
 import React from 'react';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { Sparkles, ArrowRight, Compass, User, Home } from 'lucide-react';
 import { PageView } from '../types';
 
 interface NavbarProps {
   currentView: PageView;
   onNavigate: (view: PageView) => void;
-  onScrollToSection: (sectionId: string) => void;
+  onScrollToSection?: (sectionId: string) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, onScrollToSection }) => {
@@ -23,50 +23,54 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, onScrol
           </div>
           <div>
             <span className="font-semibold text-base sm:text-lg text-slate-100 tracking-tight block leading-tight">
-              Career Agent
+              PathPilot
             </span>
             <span className="text-[10px] text-emerald-400/90 font-medium tracking-wide uppercase">
-              Student Edition
+              AI Career Agent
             </span>
           </div>
         </button>
 
         {/* Navigation Links */}
-        <nav className="flex items-center gap-2 sm:gap-6">
-          {currentView === 'landing' ? (
-            <>
-              <button
-                id="nav-how-it-works"
-                onClick={() => onScrollToSection('how-it-works')}
-                className="hidden md:inline-block text-sm text-slate-400 hover:text-slate-200 transition-colors font-medium"
-              >
-                How It Works
-              </button>
-              <button
-                id="nav-capabilities"
-                onClick={() => onScrollToSection('capabilities')}
-                className="hidden md:inline-block text-sm text-slate-400 hover:text-slate-200 transition-colors font-medium"
-              >
-                Capabilities
-              </button>
-              <button
-                id="nav-cta-btn"
-                onClick={() => onNavigate('profile')}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs sm:text-sm font-medium bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all duration-200 shadow-sm shadow-emerald-500/20 active:scale-95"
-              >
-                <span>Build Profile</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </>
-          ) : (
-            <button
-              id="nav-back-home"
-              onClick={() => onNavigate('landing')}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 transition-colors"
-            >
-              ← Back to Overview
-            </button>
-          )}
+        <nav className="flex items-center gap-2 sm:gap-4">
+          <button
+            id="nav-overview-btn"
+            onClick={() => onNavigate('landing')}
+            className={`text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+              currentView === 'landing'
+                ? 'text-emerald-400 bg-slate-800/80 border border-slate-700/60'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Home className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Overview</span>
+          </button>
+
+          <button
+            id="nav-opportunities-btn"
+            onClick={() => onNavigate('opportunities')}
+            className={`text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+              currentView === 'opportunities' || currentView === 'opportunity-detail'
+                ? 'text-emerald-400 bg-slate-800/80 border border-slate-700/60'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Compass className="w-3.5 h-3.5" />
+            <span>Opportunities</span>
+          </button>
+
+          <button
+            id="nav-profile-btn"
+            onClick={() => onNavigate('profile')}
+            className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
+              currentView === 'profile'
+                ? 'bg-emerald-500 text-slate-950 font-semibold shadow-sm shadow-emerald-500/20'
+                : 'text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60'
+            }`}
+          >
+            <User className="w-3.5 h-3.5" />
+            <span>Career Profile</span>
+          </button>
         </nav>
       </div>
     </header>
