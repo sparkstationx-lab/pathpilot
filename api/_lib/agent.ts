@@ -75,7 +75,7 @@ export async function generateContentWithRetry(
               responseSchema: schema,
             },
           }),
-          9000
+          14000
         );
 
         if (response.text && response.text.trim()) {

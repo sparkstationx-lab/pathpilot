@@ -60,36 +60,36 @@ export const OpportunitiesList: React.FC<OpportunitiesListProps> = ({
   }, [opportunities, selectedCategory, searchQuery]);
 
   return (
-    <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 py-12 space-y-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-7">
       {/* Profile Active Status Banner */}
-      <div className="rounded-2xl border border-slate-800/90 bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-950 p-7 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-xl shadow-black/20">
-        <div className="flex items-center gap-5">
-          <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-sm">
-            <UserCheck className="w-7 h-7" />
+      <div className="rounded-2xl border border-slate-800/90 bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-950 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl shadow-black/20">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-sm">
+            <UserCheck className="w-5 h-5" />
           </div>
           <div>
-            <div className="flex items-center gap-3 flex-wrap">
-              <h2 className="text-lg sm:text-xl font-bold text-slate-100">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h2 className="text-base sm:text-lg font-bold text-slate-100">
                 {profile?.fullName ? `${profile.fullName}'s Opportunity Feed` : 'Opportunity Feed'}
               </h2>
-              <span className="text-xs font-semibold uppercase px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+              <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
                 Active Profile
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-slate-400 mt-2">
+            <p className="text-xs text-slate-400 mt-0.5">
               Targeting: <strong className="text-slate-200">{profile?.careerGoal || 'Software Engineering'}</strong> | Level: <span className="text-slate-300">{profile?.currentYear || '3rd Year'} {profile?.educationDegree || 'B.Tech'}</span>
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 self-start sm:self-auto shrink-0">
+        <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
           {onNavigateToDashboard && (
             <button
               id="opportunities-to-dashboard-btn"
               onClick={onNavigateToDashboard}
-              className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-emerald-400 hover:text-emerald-300 bg-emerald-950/50 hover:bg-emerald-950/80 px-4 py-2.5 rounded-xl border border-emerald-800/60 transition-all shadow-sm cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-emerald-400 hover:text-emerald-300 bg-emerald-950/50 hover:bg-emerald-950/80 px-3 py-1.5 rounded-lg border border-emerald-800/60 transition-all shadow-sm cursor-pointer"
             >
-              <Sparkles className="w-4 h-4" />
+              <Sparkles className="w-3.5 h-3.5" />
               <span>AI Dashboard</span>
             </button>
           )}
@@ -97,39 +97,39 @@ export const OpportunitiesList: React.FC<OpportunitiesListProps> = ({
           <button
             id="update-profile-banner-btn"
             onClick={onNavigateToProfile}
-            className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-300 hover:text-slate-100 bg-slate-800/90 hover:bg-slate-800 px-4 py-2.5 rounded-xl border border-slate-700/80 transition-all shadow-sm cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-300 hover:text-slate-100 bg-slate-800/90 hover:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700/80 transition-all shadow-sm cursor-pointer"
           >
             <span>Update Profile</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
       {/* Header, Search & Filters */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-1">
-          <h1 className="text-3xl sm:text-4xl font-bold text-slate-100 tracking-tight">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-0.5">
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-100 tracking-tight">
             Opportunities
           </h1>
-          <p className="text-sm sm:text-base text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-400">
             {filteredOpportunities.length} opportunities available
           </p>
         </div>
 
         {/* Search Bar */}
-        <div className="relative w-full md:w-96">
-          <Search className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+        <div className="relative w-full md:w-80">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search by role, company, or skill..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-11 pr-12 py-3 bg-slate-900/90 border border-slate-800 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/30 transition-all shadow-sm"
+            className="w-full pl-10 pr-12 py-2 bg-slate-900/90 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/30 transition-all shadow-sm"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-200 px-1.5 py-0.5 rounded bg-slate-800"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-400 hover:text-slate-200 px-1.5 py-0.5 rounded bg-slate-800 cursor-pointer"
             >
               Clear
             </button>
@@ -138,7 +138,7 @@ export const OpportunitiesList: React.FC<OpportunitiesListProps> = ({
       </div>
 
       {/* Category Pills */}
-      <div className="flex items-center gap-2.5 overflow-x-auto pb-2 scrollbar-thin">
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
         {categories.map((cat) => {
           const Icon = cat.icon;
           const isActive = selectedCategory === cat.value;
@@ -146,13 +146,13 @@ export const OpportunitiesList: React.FC<OpportunitiesListProps> = ({
             <button
               key={cat.value}
               onClick={() => setSelectedCategory(cat.value)}
-              className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all border cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer ${
                 isActive
-                  ? 'bg-emerald-500 text-slate-950 font-bold border-emerald-400 shadow-md shadow-emerald-950/40'
-                  : 'bg-slate-900/80 text-slate-400 hover:text-slate-200 border-slate-800 hover:border-slate-700 hover:bg-slate-850'
+                  ? 'bg-emerald-500 text-slate-950 border-emerald-400 shadow-md shadow-emerald-950/40'
+                  : 'bg-slate-900/80 text-slate-400 hover:text-slate-200 border-slate-800 hover:border-slate-700 hover:bg-slate-800/80'
               }`}
             >
-              <Icon className="w-4 h-4" />
+              <Icon className="w-3.5 h-3.5" />
               <span>{cat.label}</span>
             </button>
           );
