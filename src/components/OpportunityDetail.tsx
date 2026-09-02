@@ -39,6 +39,42 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [loadingStepIndex, setLoadingStepIndex] = useState<number>(0);
+  const [loadingProgress, setLoadingProgress] = useState<number>(15);
+
+  const loadingMessages = [
+    'Analyzing your profile...',
+    'Finding relevant opportunity requirements...',
+    'Matching your skills...',
+    'Checking eligibility...',
+    'Preparing your recommendations...',
+  ];
+
+  useEffect(() => {
+    if (!loading) {
+      setLoadingStepIndex(0);
+      setLoadingProgress(15);
+      return;
+    }
+
+    const startTime = Date.now();
+    const duration = 2200;
+
+    const msgTimer = setInterval(() => {
+      setLoadingStepIndex((prev) => (prev < loadingMessages.length - 1 ? prev + 1 : prev));
+    }, 450);
+
+    const progressTimer = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min(Math.round((elapsed / duration) * 98), 98);
+      setLoadingProgress((p) => Math.max(p, pct));
+    }, 40);
+
+    return () => {
+      clearInterval(msgTimer);
+      clearInterval(progressTimer);
+    };
+  }, [loading]);
 
   const fetchAnalysis = async (force = false) => {
     if (!profile) {
@@ -48,13 +84,17 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
 
     if (force) {
       setIsRefreshing(true);
-    } else {
-      setLoading(true);
     }
+    setLoading(true);
     setError(null);
 
+    const minDelay = new Promise((resolve) => setTimeout(resolve, 2000));
+
     try {
-      const result = await analyzeOpportunityFit(profile, opportunity, force);
+      const [result] = await Promise.all([
+        analyzeOpportunityFit(profile, opportunity, force),
+        minDelay,
+      ]);
       setAnalysis(result);
     } catch (err: any) {
       console.error('Failed to analyze fit:', err);
@@ -202,15 +242,40 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
 
         {/* Loading State */}
         {loading && (
-          <div className="py-12 flex flex-col items-center justify-center text-center space-y-4">
-            <div className="w-12 h-12 rounded-full border-2 border-emerald-500/20 border-t-emerald-400 animate-spin" />
-            <div>
-              <p className="text-sm font-medium text-slate-200">
-                Analyzing match with Gemini AI...
+          <div className="py-10 px-4 flex flex-col items-center justify-center text-center space-y-4 max-w-lg mx-auto">
+            {/* Animated AI Core Icon / Spinner */}
+            <div className="relative w-14 h-14 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-2xl border-2 border-emerald-500/25 border-t-emerald-400 animate-spin" />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shadow-inner">
+                <Sparkles className="w-5 h-5 animate-pulse text-emerald-300" />
+              </div>
+              <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+            </div>
+
+            <div className="space-y-1">
+              <h3 className="text-base font-bold text-slate-100 min-h-[24px] transition-all duration-300">
+                {loadingMessages[loadingStepIndex] || 'Analyzing match with Gemini AI...'}
+              </h3>
+              <p className="text-xs text-slate-400">
+                Evaluating skills, coursework, and requirements for {opportunity.organization}.
               </p>
-              <p className="text-xs text-slate-400 mt-1">
-                Evaluating skills and eligibility requirements.
-              </p>
+            </div>
+
+            {/* Progress-style animation bar */}
+            <div className="w-full max-w-xs space-y-1.5 pt-1">
+              <div className="w-full bg-slate-950 border border-slate-800 h-2 rounded-full overflow-hidden p-0.5">
+                <div
+                  className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-300 rounded-full transition-all duration-150 ease-out"
+                  style={{ width: `${loadingProgress}%` }}
+                />
+              </div>
+              <div className="flex items-center justify-between text-[11px] text-slate-500 font-mono px-1">
+                <span className="flex items-center gap-1.5 text-slate-400">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>AI Matching</span>
+                </span>
+                <span className="text-emerald-400 font-semibold">{loadingProgress}%</span>
+              </div>
             </div>
           </div>
         )}

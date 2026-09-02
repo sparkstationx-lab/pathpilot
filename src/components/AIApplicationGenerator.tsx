@@ -35,6 +35,42 @@ export const AIApplicationGenerator: React.FC<AIApplicationGeneratorProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'all' | 'resume' | 'cover' | 'email'>('all');
+  const [loadingStepIndex, setLoadingStepIndex] = useState<number>(0);
+  const [loadingProgress, setLoadingProgress] = useState<number>(15);
+
+  const loadingMessages = [
+    'Analyzing your profile...',
+    `Matching your skills to ${opportunity.organization}...`,
+    'Checking eligibility & prerequisites...',
+    'Generating your application...',
+    'Preparing tailored cover letter & email...',
+  ];
+
+  useEffect(() => {
+    if (!loading) {
+      setLoadingStepIndex(0);
+      setLoadingProgress(15);
+      return;
+    }
+
+    const startTime = Date.now();
+    const duration = 2400;
+
+    const msgTimer = setInterval(() => {
+      setLoadingStepIndex((prev) => (prev < loadingMessages.length - 1 ? prev + 1 : prev));
+    }, 480);
+
+    const progressTimer = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min(Math.round((elapsed / duration) * 98), 98);
+      setLoadingProgress((p) => Math.max(p, pct));
+    }, 40);
+
+    return () => {
+      clearInterval(msgTimer);
+      clearInterval(progressTimer);
+    };
+  }, [loading]);
 
   // If cached data exists for this opportunity, restore it on opportunity change
   useEffect(() => {
@@ -44,12 +80,17 @@ export const AIApplicationGenerator: React.FC<AIApplicationGeneratorProps> = ({
   }, [opportunity.id]);
 
   const handleGenerate = async (force = false) => {
-    if (!profile) return;
+    if (!profile || loading) return;
     setLoading(true);
     setError(null);
 
+    const minDelay = new Promise((resolve) => setTimeout(resolve, 2300));
+
     try {
-      const result = await generateApplicationMaterials(profile, opportunity, force);
+      const [result] = await Promise.all([
+        generateApplicationMaterials(profile, opportunity, force),
+        minDelay,
+      ]);
       setMaterials(result);
     } catch (err: any) {
       console.error('Failed to generate application materials:', err);
@@ -225,10 +266,11 @@ ${materials.applicationEmail.body}
             <button
               id="generate-application-cta-btn"
               onClick={() => handleGenerate(false)}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition-all duration-200 shadow-lg shadow-emerald-500/20 active:scale-98 text-sm cursor-pointer"
+              disabled={loading}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 disabled:opacity-50 transition-all duration-200 shadow-lg shadow-emerald-500/20 active:scale-98 text-sm cursor-pointer disabled:cursor-not-allowed"
             >
               <Sparkles className="w-4 h-4 text-slate-950" />
-              <span>Generate Application</span>
+              <span>{loading ? 'Generating Application...' : 'Generate Application'}</span>
             </button>
           </div>
         </div>
@@ -236,20 +278,40 @@ ${materials.applicationEmail.body}
 
       {/* 2. LOADING STATE */}
       {loading && (
-        <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-10 text-center space-y-4">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-950 border border-emerald-800 text-emerald-400 animate-spin mb-2">
-            <Sparkles className="w-6 h-6" />
+        <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-8 sm:p-10 text-center space-y-4 max-w-lg mx-auto shadow-inner">
+          {/* Animated AI Core Icon / Spinner */}
+          <div className="relative mx-auto w-14 h-14 flex items-center justify-center">
+            <div className="absolute inset-0 rounded-2xl border-2 border-emerald-500/25 border-t-emerald-400 animate-spin" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shadow-inner">
+              <Sparkles className="w-5 h-5 animate-pulse text-emerald-300" />
+            </div>
+            <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
           </div>
-          <div className="space-y-1 max-w-md mx-auto">
-            <h3 className="text-base font-bold text-slate-100">
-              Drafting Application Materials with Gemini...
+
+          <div className="space-y-1">
+            <h3 className="text-base font-bold text-slate-100 min-h-[24px] transition-all duration-300">
+              {loadingMessages[loadingStepIndex] || 'Generating your application...'}
             </h3>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Evaluating your academic background in {profile?.branchField || 'Computer Science'}, verified skills, and project accomplishments against {opportunity.organization}'s requirements.
+              Evaluating your background in {profile?.branchField || 'Computer Science'}, verified skills, and project accomplishments against {opportunity.organization}'s requirements.
             </p>
           </div>
-          <div className="w-48 h-1.5 bg-slate-800 rounded-full mx-auto overflow-hidden">
-            <div className="w-full h-full bg-emerald-400 animate-pulse" />
+
+          {/* Progress-style animation bar */}
+          <div className="w-full max-w-xs mx-auto space-y-1.5 pt-1">
+            <div className="w-full bg-slate-950 border border-slate-800 h-2 rounded-full overflow-hidden p-0.5">
+              <div
+                className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-300 rounded-full transition-all duration-150 ease-out"
+                style={{ width: `${loadingProgress}%` }}
+              />
+            </div>
+            <div className="flex items-center justify-between text-[11px] text-slate-500 font-mono px-1">
+              <span className="flex items-center gap-1.5 text-slate-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>AI Drafting</span>
+              </span>
+              <span className="text-emerald-400 font-semibold">{loadingProgress}%</span>
+            </div>
           </div>
         </div>
       )}

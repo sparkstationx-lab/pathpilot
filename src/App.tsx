@@ -16,6 +16,7 @@ import { AICareerDashboard } from './components/AICareerDashboard';
 import { OpportunitiesList } from './components/OpportunitiesList';
 import { OpportunityDetail } from './components/OpportunityDetail';
 import { Footer } from './components/Footer';
+import { AILoadingOverlay } from './components/AILoadingOverlay';
 
 const STORAGE_KEY = 'autonomous_career_agent_profile';
 const MATCH_CACHE_KEY = 'autonomous_career_agent_matches';
@@ -38,6 +39,12 @@ export default function App() {
   const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null);
   const [profile, setProfile] = useState<StudentProfile>(DEFAULT_PROFILE);
   const [cachedAnalyses, setCachedAnalyses] = useState<Record<string, AIMatchAnalysis>>({});
+  const [aiLoadingState, setAiLoadingState] = useState<{
+    isOpen: boolean;
+    title?: string;
+    messages?: string[];
+    subtext?: string;
+  }>({ isOpen: false });
 
   // Load profile from localStorage on mount & view transitions
   useEffect(() => {
@@ -59,6 +66,7 @@ export default function App() {
   }, [currentView]);
 
   const handleNavigate = (view: PageView) => {
+    if (aiLoadingState.isOpen) return;
     if (view === 'profile') {
       setPreviousView(currentView !== 'profile' ? currentView : 'landing');
     }
@@ -67,10 +75,27 @@ export default function App() {
   };
 
   const handleSelectOpportunity = (opp: Opportunity) => {
-    setSelectedOpportunity(opp);
-    setPreviousView(currentView);
-    setCurrentView('opportunity-detail');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (aiLoadingState.isOpen) return;
+
+    setAiLoadingState({
+      isOpen: true,
+      title: 'PathPilot Opportunity Matcher',
+      messages: [
+        'Finding relevant opportunities...',
+        'Matching your skills...',
+        'Checking eligibility...',
+        'Preparing your recommendations...',
+      ],
+      subtext: `Matching skills and evaluating eligibility requirements for ${opp.title} at ${opp.organization}.`,
+    });
+
+    setTimeout(() => {
+      setSelectedOpportunity(opp);
+      setPreviousView(currentView);
+      setCurrentView('opportunity-detail');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setAiLoadingState({ isOpen: false });
+    }, 2200);
   };
 
   const scrollToSection = (sectionId: string) => {
@@ -180,6 +205,15 @@ export default function App() {
       <Footer
         onNavigate={handleNavigate}
         onScrollToSection={scrollToSection}
+      />
+
+      {/* Global AI Loading Overlay Transition */}
+      <AILoadingOverlay
+        isOpen={aiLoadingState.isOpen}
+        title={aiLoadingState.title}
+        messages={aiLoadingState.messages}
+        subtext={aiLoadingState.subtext}
+        minDurationMs={2200}
       />
     </div>
   );
