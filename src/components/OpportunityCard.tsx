@@ -86,44 +86,44 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
     <div 
       id={`opp-card-${opportunity.id}`}
       onClick={() => onSelect(opportunity)}
-      className="group relative flex flex-col justify-between rounded-xl border border-slate-800/80 bg-slate-900/60 p-6 backdrop-blur-sm transition-all duration-200 hover:border-emerald-500/40 hover:bg-slate-900/90 hover:shadow-lg hover:shadow-emerald-950/20 cursor-pointer"
+      className="group relative flex flex-col justify-between rounded-2xl border border-slate-800/90 bg-slate-900/70 p-7 backdrop-blur-sm transition-all duration-200 hover:border-emerald-500/50 hover:bg-slate-900/90 hover:shadow-xl hover:shadow-emerald-950/20 cursor-pointer space-y-6"
     >
       {/* Card Header & Badges */}
       <div>
-        <div className="flex items-center justify-between gap-3 mb-3">
+        <div className="flex items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-2">
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border ${getCategoryStyle()}`}>
+            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${getCategoryStyle()}`}>
               {getCategoryIcon()}
               {opportunity.category}
             </span>
-            <span className="inline-flex items-center text-xs text-slate-400 px-2 py-0.5 rounded-full bg-slate-800/60 border border-slate-700/50">
+            <span className="inline-flex items-center text-xs text-slate-400 px-2.5 py-1 rounded-full bg-slate-800/70 border border-slate-700/60">
               {opportunity.type}
             </span>
           </div>
 
           {/* Match Score Badge */}
-          <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${getScoreBadgeColor(matchScore)} shadow-sm`}>
+          <div className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border ${getScoreBadgeColor(matchScore)} shadow-sm`}>
             <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
             <span>{matchScore}% Match</span>
           </div>
         </div>
 
         {/* Title & Organization */}
-        <h3 className="text-lg font-semibold text-slate-100 group-hover:text-emerald-300 transition-colors line-clamp-1 mb-1">
+        <h3 className="text-xl font-bold text-slate-100 group-hover:text-emerald-300 transition-colors line-clamp-1 mb-2">
           {opportunity.title}
         </h3>
-        <p className="text-sm font-medium text-slate-400 mb-3 flex items-center gap-1.5">
-          <Building2 className="w-3.5 h-3.5 text-slate-500" />
+        <p className="text-sm font-medium text-slate-300 mb-4 flex items-center gap-2">
+          <Building2 className="w-4 h-4 text-slate-400" />
           {opportunity.organization}
         </p>
 
         {/* Short Summary */}
-        <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed mb-4">
+        <p className="text-sm text-slate-400 line-clamp-2 leading-relaxed mb-5">
           {opportunity.summary}
         </p>
 
         {/* Required Skills Chips */}
-        <div className="flex flex-wrap gap-1.5 mb-5">
+        <div className="flex flex-wrap gap-2 mb-2">
           {opportunity.requiredSkills.slice(0, 3).map((skill, idx) => {
             const isStudentSkill = profile?.skills?.some(
               (s) => s.toLowerCase() === skill.toLowerCase() || skill.toLowerCase().includes(s.toLowerCase())
@@ -131,10 +131,10 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
             return (
               <span
                 key={idx}
-                className={`text-[11px] px-2 py-0.5 rounded-md border font-mono ${
+                className={`text-xs px-2.5 py-1 rounded-lg border font-mono font-medium ${
                   isStudentSkill
-                    ? 'bg-emerald-950/40 text-emerald-300 border-emerald-800/60'
-                    : 'bg-slate-800/40 text-slate-400 border-slate-700/40'
+                    ? 'bg-emerald-950/50 text-emerald-300 border-emerald-800/70'
+                    : 'bg-slate-800/60 text-slate-400 border-slate-700/60'
                 }`}
               >
                 {skill}
@@ -142,7 +142,7 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
             );
           })}
           {opportunity.requiredSkills.length > 3 && (
-            <span className="text-[11px] px-1.5 py-0.5 rounded-md bg-slate-800/40 text-slate-500 border border-slate-700/30">
+            <span className="text-xs px-2 py-1 rounded-lg bg-slate-800/60 text-slate-400 border border-slate-700/50">
               +{opportunity.requiredSkills.length - 3}
             </span>
           )}
@@ -150,14 +150,14 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
       </div>
 
       {/* Card Footer: Metadata & Action CTA */}
-      <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1">
-            <Calendar className="w-3.5 h-3.5 text-slate-500" />
+      <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs sm:text-sm text-slate-400">
+        <div className="flex items-center gap-4">
+          <span className="flex items-center gap-1.5">
+            <Calendar className="w-4 h-4 text-slate-500" />
             {opportunity.deadline}
           </span>
-          <span className="flex items-center gap-1 text-slate-400">
-            <MapPin className="w-3.5 h-3.5 text-slate-500" />
+          <span className="flex items-center gap-1.5 text-slate-400">
+            <MapPin className="w-4 h-4 text-slate-500" />
             {opportunity.location.split('/')[0].trim()}
           </span>
         </div>
@@ -168,10 +168,10 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
             e.stopPropagation();
             onSelect(opportunity);
           }}
-          className="inline-flex items-center gap-1 text-emerald-400 font-medium group-hover:text-emerald-300 group-hover:translate-x-0.5 transition-all"
+          className="inline-flex items-center gap-1.5 text-emerald-400 font-semibold group-hover:text-emerald-300 group-hover:translate-x-1 transition-all"
         >
           <span>AI Analysis</span>
-          <ArrowRight className="w-3.5 h-3.5" />
+          <ArrowRight className="w-4 h-4" />
         </button>
       </div>
     </div>

@@ -134,16 +134,16 @@ ${materials.applicationEmail.body}
   return (
     <section 
       id="ai-application-generator-section"
-      className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6 sm:p-8 backdrop-blur-md shadow-xl space-y-6"
+      className="rounded-2xl border border-slate-800/90 bg-slate-900/80 p-7 sm:p-9 backdrop-blur-md shadow-xl shadow-black/20 space-y-8"
     >
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-800/80">
-        <div className="space-y-1">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/70 border border-emerald-800/50 text-emerald-400 text-xs font-semibold">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 border-b border-slate-800/80">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/70 border border-emerald-800/50 text-emerald-400 text-xs font-bold">
             <Sparkles className="w-3.5 h-3.5" />
             <span>AI Application Generator</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-100 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-100 tracking-tight">
             Tailored Application Suite
           </h2>
           <p className="text-xs sm:text-sm text-slate-400 max-w-2xl leading-relaxed">
@@ -152,29 +152,29 @@ ${materials.applicationEmail.body}
         </div>
 
         {materials && !loading && (
-          <div className="flex items-center gap-2 self-start sm:self-auto">
+          <div className="flex items-center gap-3 self-start sm:self-auto shrink-0">
             <button
               id="regenerate-application-btn"
               onClick={() => handleGenerate(true)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-200 bg-slate-950 border border-slate-800 hover:border-slate-700 hover:text-white transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-200 bg-slate-950 border border-slate-800 hover:border-slate-700 hover:text-white transition-all cursor-pointer shadow-sm"
             >
-              <RotateCcw className="w-3.5 h-3.5 text-emerald-400" />
+              <RotateCcw className="w-4 h-4 text-emerald-400" />
               <span>Regenerate</span>
             </button>
 
             <button
               id="copy-all-application-btn"
               onClick={handleCopyAll}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition-colors shadow-sm cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition-colors shadow-md shadow-emerald-950/40 cursor-pointer"
             >
               {copiedKey === 'all' ? (
                 <>
-                  <Check className="w-3.5 h-3.5" />
+                  <Check className="w-4 h-4" />
                   <span>All Copied!</span>
                 </>
               ) : (
                 <>
-                  <Copy className="w-3.5 h-3.5" />
+                  <Copy className="w-4 h-4" />
                   <span>Copy All</span>
                 </>
               )}
@@ -185,13 +185,13 @@ ${materials.applicationEmail.body}
 
       {/* Error state */}
       {error && (
-        <div className="rounded-xl bg-red-950/30 border border-red-800/50 p-4 flex items-start gap-3 text-red-200 text-xs">
-          <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-          <div className="space-y-1">
+        <div className="rounded-2xl bg-red-950/30 border border-red-800/50 p-5 flex items-start gap-4 text-red-200 text-xs sm:text-sm">
+          <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+          <div className="space-y-1.5">
             <p className="font-semibold">{error}</p>
             <button
               onClick={() => handleGenerate(true)}
-              className="text-red-300 underline hover:text-white font-medium"
+              className="text-red-300 underline hover:text-white font-medium cursor-pointer"
             >
               Click here to retry generation
             </button>
@@ -200,9 +200,9 @@ ${materials.applicationEmail.body}
       )}
 
       {/* Profile grounding disclaimer banner */}
-      <div className="rounded-xl bg-slate-950/60 border border-slate-800/70 p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs text-slate-400">
-        <div className="flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+      <div className="rounded-2xl bg-slate-950/60 border border-slate-800/80 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs sm:text-sm text-slate-400">
+        <div className="flex items-center gap-3">
+          <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
           <span>
             Strictly grounded in your verified profile:{' '}
             <strong className="text-slate-200">{profile?.fullName || 'Student'}</strong> (
@@ -212,7 +212,7 @@ ${materials.applicationEmail.body}
         {onEditProfile && (
           <button
             onClick={onEditProfile}
-            className="text-emerald-400 hover:text-emerald-300 font-medium underline self-start sm:self-auto"
+            className="text-emerald-400 hover:text-emerald-300 font-semibold underline self-start sm:self-auto cursor-pointer"
           >
             Update profile data
           </button>
@@ -221,13 +221,13 @@ ${materials.applicationEmail.body}
 
       {/* 1. INITIAL EMPTY / CALL-TO-ACTION STATE */}
       {!materials && !loading && (
-        <div className="rounded-2xl border border-dashed border-slate-800 bg-slate-950/40 p-8 sm:p-10 text-center space-y-6">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-inner">
-            <Sparkles className="w-7 h-7" />
+        <div className="rounded-2xl border border-dashed border-slate-800/90 bg-slate-950/40 p-10 sm:p-12 text-center space-y-8">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-inner">
+            <Sparkles className="w-8 h-8" />
           </div>
 
-          <div className="space-y-2 max-w-lg mx-auto">
-            <h3 className="text-lg sm:text-xl font-bold text-slate-100">
+          <div className="space-y-2.5 max-w-lg mx-auto">
+            <h3 className="text-xl sm:text-2xl font-bold text-slate-100">
               Ready to Apply for {opportunity.title}?
             </h3>
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
@@ -236,40 +236,40 @@ ${materials.applicationEmail.body}
           </div>
 
           {/* 3 Deliverables Preview Pills */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto text-left">
-            <div className="rounded-xl bg-slate-900/90 border border-slate-800 p-3.5 space-y-1">
-              <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400">
-                <FileText className="w-3.5 h-3.5" />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto text-left">
+            <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 space-y-1.5 shadow-sm">
+              <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-emerald-400">
+                <FileText className="w-4 h-4" />
                 <span>Resume Summary</span>
               </div>
-              <p className="text-[11px] text-slate-400">2–3 sentence profile header for this role.</p>
+              <p className="text-xs text-slate-400 leading-relaxed">2–3 sentence profile header for this role.</p>
             </div>
 
-            <div className="rounded-xl bg-slate-900/90 border border-slate-800 p-3.5 space-y-1">
-              <div className="flex items-center gap-2 text-xs font-semibold text-teal-400">
-                <FileSignature className="w-3.5 h-3.5" />
+            <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 space-y-1.5 shadow-sm">
+              <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-teal-400">
+                <FileSignature className="w-4 h-4" />
                 <span>Cover Letter</span>
               </div>
-              <p className="text-[11px] text-slate-400">Targeted letter highlighting your projects and skills.</p>
+              <p className="text-xs text-slate-400 leading-relaxed">Targeted letter highlighting your projects and skills.</p>
             </div>
 
-            <div className="rounded-xl bg-slate-900/90 border border-slate-800 p-3.5 space-y-1">
-              <div className="flex items-center gap-2 text-xs font-semibold text-cyan-400">
-                <Mail className="w-3.5 h-3.5" />
+            <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 space-y-1.5 shadow-sm">
+              <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-cyan-400">
+                <Mail className="w-4 h-4" />
                 <span>Application Email</span>
               </div>
-              <p className="text-[11px] text-slate-400">Concise outreach note for hiring teams.</p>
+              <p className="text-xs text-slate-400 leading-relaxed">Concise outreach note for hiring teams.</p>
             </div>
           </div>
 
-          <div>
+          <div className="pt-2">
             <button
               id="generate-application-cta-btn"
               onClick={() => handleGenerate(false)}
               disabled={loading}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 disabled:opacity-50 transition-all duration-200 shadow-lg shadow-emerald-500/20 active:scale-98 text-sm cursor-pointer disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-xl font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 disabled:opacity-50 transition-all duration-200 shadow-lg shadow-emerald-500/20 active:scale-98 text-sm sm:text-base cursor-pointer disabled:cursor-not-allowed"
             >
-              <Sparkles className="w-4 h-4 text-slate-950" />
+              <Sparkles className="w-5 h-5 text-slate-950" />
               <span>{loading ? 'Generating Application...' : 'Generate Application'}</span>
             </button>
           </div>
@@ -278,36 +278,36 @@ ${materials.applicationEmail.body}
 
       {/* 2. LOADING STATE */}
       {loading && (
-        <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-8 sm:p-10 text-center space-y-4 max-w-lg mx-auto shadow-inner">
+        <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-10 sm:p-12 text-center space-y-5 max-w-lg mx-auto shadow-inner">
           {/* Animated AI Core Icon / Spinner */}
-          <div className="relative mx-auto w-14 h-14 flex items-center justify-center">
+          <div className="relative mx-auto w-16 h-16 flex items-center justify-center">
             <div className="absolute inset-0 rounded-2xl border-2 border-emerald-500/25 border-t-emerald-400 animate-spin" />
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shadow-inner">
-              <Sparkles className="w-5 h-5 animate-pulse text-emerald-300" />
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shadow-inner">
+              <Sparkles className="w-6 h-6 animate-pulse text-emerald-300" />
             </div>
-            <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+            <div className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
           </div>
 
-          <div className="space-y-1">
-            <h3 className="text-base font-bold text-slate-100 min-h-[24px] transition-all duration-300">
+          <div className="space-y-1.5">
+            <h3 className="text-lg font-bold text-slate-100 min-h-[28px] transition-all duration-300">
               {loadingMessages[loadingStepIndex] || 'Generating your application...'}
             </h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
               Evaluating your background in {profile?.branchField || 'Computer Science'}, verified skills, and project accomplishments against {opportunity.organization}'s requirements.
             </p>
           </div>
 
           {/* Progress-style animation bar */}
-          <div className="w-full max-w-xs mx-auto space-y-1.5 pt-1">
-            <div className="w-full bg-slate-950 border border-slate-800 h-2 rounded-full overflow-hidden p-0.5">
+          <div className="w-full max-w-xs mx-auto space-y-2 pt-2">
+            <div className="w-full bg-slate-950 border border-slate-800 h-2.5 rounded-full overflow-hidden p-0.5">
               <div
                 className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-300 rounded-full transition-all duration-150 ease-out"
                 style={{ width: `${loadingProgress}%` }}
               />
             </div>
-            <div className="flex items-center justify-between text-[11px] text-slate-500 font-mono px-1">
+            <div className="flex items-center justify-between text-xs text-slate-500 font-mono px-1">
               <span className="flex items-center gap-1.5 text-slate-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 <span>AI Drafting</span>
               </span>
               <span className="text-emerald-400 font-semibold">{loadingProgress}%</span>
@@ -318,16 +318,16 @@ ${materials.applicationEmail.body}
 
       {/* 3. GENERATED MATERIALS DISPLAY */}
       {materials && !loading && (
-        <div className="space-y-6">
+        <div className="space-y-7">
           {/* Navigation Tab Bar for Filter/Quick Jump */}
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
-            <div className="flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1">
               <button
                 id="tab-all-materials"
                 onClick={() => setActiveTab('all')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors cursor-pointer ${
                   activeTab === 'all'
-                    ? 'bg-emerald-500 text-slate-950'
+                    ? 'bg-emerald-500 text-slate-950 shadow-sm'
                     : 'text-slate-400 hover:text-slate-200 bg-slate-950/60 border border-slate-800'
                 }`}
               >
@@ -337,44 +337,44 @@ ${materials.applicationEmail.body}
               <button
                 id="tab-resume-summary"
                 onClick={() => setActiveTab('resume')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 ${
+                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2 cursor-pointer ${
                   activeTab === 'resume'
-                    ? 'bg-emerald-500 text-slate-950'
+                    ? 'bg-emerald-500 text-slate-950 shadow-sm'
                     : 'text-slate-400 hover:text-slate-200 bg-slate-950/60 border border-slate-800'
                 }`}
               >
-                <FileText className="w-3.5 h-3.5" />
+                <FileText className="w-4 h-4" />
                 <span>Resume Summary</span>
               </button>
 
               <button
                 id="tab-cover-letter"
                 onClick={() => setActiveTab('cover')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 ${
+                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2 cursor-pointer ${
                   activeTab === 'cover'
-                    ? 'bg-emerald-500 text-slate-950'
+                    ? 'bg-emerald-500 text-slate-950 shadow-sm'
                     : 'text-slate-400 hover:text-slate-200 bg-slate-950/60 border border-slate-800'
                 }`}
               >
-                <FileSignature className="w-3.5 h-3.5" />
+                <FileSignature className="w-4 h-4" />
                 <span>Cover Letter</span>
               </button>
 
               <button
                 id="tab-application-email"
                 onClick={() => setActiveTab('email')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 ${
+                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2 cursor-pointer ${
                   activeTab === 'email'
-                    ? 'bg-emerald-500 text-slate-950'
+                    ? 'bg-emerald-500 text-slate-950 shadow-sm'
                     : 'text-slate-400 hover:text-slate-200 bg-slate-950/60 border border-slate-800'
                 }`}
               >
-                <Mail className="w-3.5 h-3.5" />
+                <Mail className="w-4 h-4" />
                 <span>Application Email</span>
               </button>
             </div>
 
-            <span className="text-[11px] text-slate-500">
+            <span className="text-xs text-slate-500">
               Generated: {new Date(materials.generatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </span>
           </div>
@@ -385,18 +385,18 @@ ${materials.applicationEmail.body}
           {(activeTab === 'all' || activeTab === 'resume') && (
             <div 
               id="resume-summary-section"
-              className="rounded-xl border border-slate-800 bg-slate-950/70 p-5 sm:p-6 space-y-3.5 relative hover:border-emerald-500/30 transition-colors"
+              className="rounded-2xl border border-slate-800 bg-slate-950/70 p-6 sm:p-7 space-y-4 relative hover:border-emerald-500/30 transition-colors"
             >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800/80">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                    <FileText className="w-4 h-4" />
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800/80">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-sm">
+                    <FileText className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-sm sm:text-base font-bold text-slate-100">
+                    <h3 className="text-base sm:text-lg font-bold text-slate-100">
                       Tailored Resume Summary
                     </h3>
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-xs text-slate-400">
                       Add this statement to the top of your resume.
                     </p>
                   </div>
@@ -405,27 +405,27 @@ ${materials.applicationEmail.body}
                 <button
                   id="copy-resume-summary-btn"
                   onClick={() => copyToClipboard(materials.resumeSummary, 'resume')}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-400 hover:text-emerald-300 bg-slate-900 border border-slate-800 hover:border-emerald-700/60 transition-all self-start sm:self-auto cursor-pointer"
+                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-emerald-400 hover:text-emerald-300 bg-slate-900 border border-slate-800 hover:border-emerald-700/60 transition-all self-start sm:self-auto cursor-pointer shadow-sm"
                 >
                   {copiedKey === 'resume' ? (
                     <>
-                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                      <Check className="w-4 h-4 text-emerald-400" />
                       <span>Copied!</span>
                     </>
                   ) : (
                     <>
-                      <Copy className="w-3.5 h-3.5" />
+                      <Copy className="w-4 h-4" />
                       <span>Copy Summary</span>
                     </>
                   )}
                 </button>
               </div>
 
-              <div className="rounded-lg bg-slate-900/90 border border-slate-800/80 p-4 text-xs sm:text-sm text-slate-200 leading-relaxed font-sans select-all">
+              <div className="rounded-xl bg-slate-900/90 border border-slate-800/80 p-5 text-xs sm:text-sm text-slate-200 leading-relaxed font-sans select-all">
                 {materials.resumeSummary}
               </div>
 
-              <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
+              <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
                 <span>Tailored for: <strong className="text-slate-400">{opportunity.title}</strong></span>
                 <span>{materials.resumeSummary.split(' ').length} words</span>
               </div>
@@ -438,18 +438,18 @@ ${materials.applicationEmail.body}
           {(activeTab === 'all' || activeTab === 'cover') && (
             <div 
               id="cover-letter-section"
-              className="rounded-xl border border-slate-800 bg-slate-950/70 p-5 sm:p-6 space-y-3.5 relative hover:border-emerald-500/30 transition-colors"
+              className="rounded-2xl border border-slate-800 bg-slate-950/70 p-6 sm:p-7 space-y-4 relative hover:border-emerald-500/30 transition-colors"
             >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800/80">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-400">
-                    <FileSignature className="w-4 h-4" />
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800/80">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-400 shadow-sm">
+                    <FileSignature className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-sm sm:text-base font-bold text-slate-100">
+                    <h3 className="text-base sm:text-lg font-bold text-slate-100">
                       Targeted Cover Letter
                     </h3>
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-xs text-slate-400">
                       Connects your projects and skills to the role.
                     </p>
                   </div>
@@ -458,27 +458,27 @@ ${materials.applicationEmail.body}
                 <button
                   id="copy-cover-letter-btn"
                   onClick={() => copyToClipboard(materials.coverLetter, 'cover')}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-teal-400 hover:text-teal-300 bg-slate-900 border border-slate-800 hover:border-teal-700/60 transition-all self-start sm:self-auto cursor-pointer"
+                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-teal-400 hover:text-teal-300 bg-slate-900 border border-slate-800 hover:border-teal-700/60 transition-all self-start sm:self-auto cursor-pointer shadow-sm"
                 >
                   {copiedKey === 'cover' ? (
                     <>
-                      <Check className="w-3.5 h-3.5 text-teal-400" />
+                      <Check className="w-4 h-4 text-teal-400" />
                       <span>Copied!</span>
                     </>
                   ) : (
                     <>
-                      <Copy className="w-3.5 h-3.5" />
+                      <Copy className="w-4 h-4" />
                       <span>Copy Cover Letter</span>
                     </>
                   )}
                 </button>
               </div>
 
-              <div className="rounded-lg bg-slate-900/90 border border-slate-800/80 p-5 text-xs sm:text-sm text-slate-200 leading-relaxed font-sans whitespace-pre-line select-all space-y-3">
+              <div className="rounded-xl bg-slate-900/90 border border-slate-800/80 p-6 text-xs sm:text-sm text-slate-200 leading-relaxed font-sans whitespace-pre-line select-all space-y-3">
                 {materials.coverLetter}
               </div>
 
-              <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
+              <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
                 <span>Addressed to: <strong className="text-slate-400">{opportunity.organization}</strong></span>
                 <span>{materials.coverLetter.split(' ').length} words</span>
               </div>
@@ -491,18 +491,18 @@ ${materials.applicationEmail.body}
           {(activeTab === 'all' || activeTab === 'email') && (
             <div 
               id="application-email-section"
-              className="rounded-xl border border-slate-800 bg-slate-950/70 p-5 sm:p-6 space-y-4 relative hover:border-emerald-500/30 transition-colors"
+              className="rounded-2xl border border-slate-800 bg-slate-950/70 p-6 sm:p-7 space-y-5 relative hover:border-emerald-500/30 transition-colors"
             >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800/80">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
-                    <Mail className="w-4 h-4" />
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800/80">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shadow-sm">
+                    <Mail className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-sm sm:text-base font-bold text-slate-100">
+                    <h3 className="text-base sm:text-lg font-bold text-slate-100">
                       Application Outreach Email
                     </h3>
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-xs text-slate-400">
                       Ready-to-send outreach message for hiring teams.
                     </p>
                   </div>
@@ -511,16 +511,16 @@ ${materials.applicationEmail.body}
                 <button
                   id="copy-full-email-btn"
                   onClick={() => copyToClipboard(`Subject: ${materials.applicationEmail.subject}\n\n${materials.applicationEmail.body}`, 'email')}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-cyan-400 hover:text-cyan-300 bg-slate-900 border border-slate-800 hover:border-cyan-700/60 transition-all self-start sm:self-auto cursor-pointer"
+                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-cyan-400 hover:text-cyan-300 bg-slate-900 border border-slate-800 hover:border-cyan-700/60 transition-all self-start sm:self-auto cursor-pointer shadow-sm"
                 >
                   {copiedKey === 'email' ? (
                     <>
-                      <Check className="w-3.5 h-3.5 text-cyan-400" />
+                      <Check className="w-4 h-4 text-cyan-400" />
                       <span>Copied Full Email!</span>
                     </>
                   ) : (
                     <>
-                      <Copy className="w-3.5 h-3.5" />
+                      <Copy className="w-4 h-4" />
                       <span>Copy Full Email</span>
                     </>
                   )}
@@ -528,36 +528,36 @@ ${materials.applicationEmail.body}
               </div>
 
               {/* Subject Line */}
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 <div className="flex items-center justify-between text-xs text-slate-400">
-                  <span className="font-semibold uppercase tracking-wider text-[10px] text-slate-400">
+                  <span className="font-bold uppercase tracking-wider text-xs text-slate-400">
                     Email Subject Line
                   </span>
                   <button
                     onClick={() => copyToClipboard(materials.applicationEmail.subject, 'email-subject')}
-                    className="text-[11px] text-cyan-400 hover:underline flex items-center gap-1"
+                    className="text-xs text-cyan-400 hover:underline flex items-center gap-1 font-medium cursor-pointer"
                   >
                     {copiedKey === 'email-subject' ? (
                       <span className="text-emerald-400 font-semibold">Copied!</span>
                     ) : (
                       <>
-                        <Copy className="w-3 h-3" />
+                        <Copy className="w-3.5 h-3.5" />
                         <span>Copy Subject</span>
                       </>
                     )}
                   </button>
                 </div>
-                <div className="rounded-lg bg-slate-900/90 border border-slate-800/80 px-3.5 py-2.5 text-xs sm:text-sm font-mono text-slate-200 select-all">
+                <div className="rounded-xl bg-slate-900/90 border border-slate-800/80 px-4 py-3 text-xs sm:text-sm font-mono text-slate-200 select-all">
                   {materials.applicationEmail.subject}
                 </div>
               </div>
 
               {/* Email Body */}
-              <div className="space-y-1.5">
-                <span className="font-semibold uppercase tracking-wider text-[10px] text-slate-400 block">
+              <div className="space-y-2">
+                <span className="font-bold uppercase tracking-wider text-xs text-slate-400 block">
                   Email Message Body
                 </span>
-                <div className="rounded-lg bg-slate-900/90 border border-slate-800/80 p-4 text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-line select-all">
+                <div className="rounded-xl bg-slate-900/90 border border-slate-800/80 p-5 text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-line select-all">
                   {materials.applicationEmail.body}
                 </div>
               </div>

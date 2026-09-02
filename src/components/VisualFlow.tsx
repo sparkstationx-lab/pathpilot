@@ -43,17 +43,17 @@ export const VisualFlow: React.FC = () => {
   ];
 
   return (
-    <div className="w-full max-w-5xl mx-auto my-12 px-4 sm:px-6">
-      <div className="text-center mb-8">
-        <span className="text-xs font-semibold uppercase tracking-wider text-emerald-400/90 bg-emerald-950/60 border border-emerald-800/40 px-3 py-1 rounded-full">
+    <div className="w-full max-w-6xl mx-auto py-16 sm:py-24 px-6 sm:px-8">
+      <div className="text-center mb-12 sm:mb-16">
+        <span className="text-xs font-semibold uppercase tracking-wider text-emerald-400 bg-emerald-950/70 border border-emerald-800/50 px-3.5 py-1.5 rounded-full">
           Autonomous Workflow
         </span>
-        <h3 className="text-xl sm:text-2xl font-semibold text-slate-100 mt-2">
+        <h3 className="text-2xl sm:text-3xl font-bold text-slate-100 mt-4 tracking-tight">
           From Profile to Opportunities in Three Stages
         </h3>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 relative">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 relative">
         {steps.map((step, index) => {
           const Icon = step.icon;
           return (
@@ -62,36 +62,36 @@ export const VisualFlow: React.FC = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
-              className={`relative rounded-2xl bg-slate-900/60 border ${step.borderColor} p-5 sm:p-6 backdrop-blur-sm flex flex-col justify-between group hover:bg-slate-900/90 transition-all duration-300 shadow-lg shadow-black/20`}
+              className={`relative rounded-2xl bg-slate-900/60 border ${step.borderColor} p-7 sm:p-8 backdrop-blur-sm flex flex-col justify-between group hover:bg-slate-900/90 transition-all duration-300 shadow-xl shadow-black/30`}
             >
               {/* Card Header */}
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-slate-800/90 border border-slate-700/60 flex items-center justify-center text-slate-200">
-                    <Icon className={`w-5 h-5 ${step.accentColor}`} />
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-12 h-12 rounded-xl bg-slate-800/90 border border-slate-700/60 flex items-center justify-center text-slate-200 shadow-sm">
+                    <Icon className={`w-6 h-6 ${step.accentColor}`} />
                   </div>
-                  <span className="text-xs font-mono font-medium px-2.5 py-1 rounded-md bg-slate-800/80 text-slate-300 border border-slate-700/50">
+                  <span className="text-xs font-mono font-medium px-3 py-1 rounded-lg bg-slate-800/80 text-slate-300 border border-slate-700/60">
                     {step.badge}
                   </span>
                 </div>
 
-                <div className="mb-3">
-                  <span className="text-xs font-mono text-slate-500 font-semibold tracking-wider block mb-1">
+                <div className="mb-6">
+                  <span className="text-xs font-mono text-slate-500 font-semibold tracking-wider block mb-1.5">
                     STAGE {step.number}
                   </span>
-                  <h4 className="text-lg font-bold text-slate-100 tracking-tight">
+                  <h4 className="text-xl font-bold text-slate-100 tracking-tight">
                     {step.title}
                   </h4>
-                  <p className="text-xs sm:text-sm text-slate-400 mt-1">
+                  <p className="text-sm text-slate-400 mt-2 leading-relaxed">
                     {step.subtitle}
                   </p>
                 </div>
 
                 {/* Micro bullets */}
-                <div className="pt-3 border-t border-slate-800/80 space-y-1.5">
+                <div className="pt-5 border-t border-slate-800/80 space-y-2.5">
                   {step.items.map((item, i) => (
-                    <div key={i} className="flex items-center gap-2 text-xs text-slate-300">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/80" />
+                    <div key={i} className="flex items-center gap-2.5 text-xs sm:text-sm text-slate-300">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500/80 shrink-0" />
                       <span>{item}</span>
                     </div>
                   ))}
@@ -100,8 +100,8 @@ export const VisualFlow: React.FC = () => {
 
               {/* Arrow indicator between cards on desktop */}
               {index < steps.length - 1 && (
-                <div className="hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-6 h-6 rounded-full bg-slate-950 border border-slate-700 items-center justify-center text-emerald-400 shadow-md">
-                  <ArrowRight className="w-3.5 h-3.5" />
+                <div className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-slate-950 border border-slate-700 items-center justify-center text-emerald-400 shadow-lg">
+                  <ArrowRight className="w-4 h-4" />
                 </div>
               )}
             </motion.div>
