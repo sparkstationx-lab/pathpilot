@@ -14,31 +14,31 @@ export const VisualFlow: React.FC = () => {
       accentColor: 'text-emerald-400',
       bgGlow: 'from-emerald-500/10 to-transparent',
       borderColor: 'border-emerald-500/30',
-      items: ['Academic background', 'Technical & soft skills', 'Target career track'],
+      items: ['Academic background', 'Skills & projects', 'Career goals'],
     },
     {
       id: 'step-analysis',
       number: '02',
-      title: 'AI Analysis',
-      subtitle: 'Eligibility & skill matching',
+      title: 'Match Analysis',
+      subtitle: 'Eligibility & skill mapping',
       icon: Cpu,
-      badge: 'Intelligence',
+      badge: 'Analysis',
       accentColor: 'text-teal-400',
       bgGlow: 'from-teal-500/10 to-transparent',
       borderColor: 'border-teal-500/30',
-      items: ['Requirement mapping', 'Skill gap identification', 'Relevance ranking'],
+      items: ['Requirements check', 'Skill gap analysis', 'Score calculation'],
     },
     {
       id: 'step-opportunities',
       number: '03',
       title: 'Matched Opportunities',
-      subtitle: 'Ranked & ready for action',
+      subtitle: 'Ranked recommendations',
       icon: Target,
-      badge: 'Outcome',
+      badge: 'Output',
       accentColor: 'text-emerald-300',
       bgGlow: 'from-emerald-400/10 to-transparent',
       borderColor: 'border-emerald-400/30',
-      items: ['Internships & jobs', 'Scholarships & certs', 'Tailored application drafts'],
+      items: ['Internships & jobs', 'Scholarships & certs', 'Application drafts'],
     },
   ];
 
@@ -46,10 +46,10 @@ export const VisualFlow: React.FC = () => {
     <div className="w-full max-w-6xl mx-auto py-16 sm:py-24 px-6 sm:px-8">
       <div className="text-center mb-12 sm:mb-16">
         <span className="text-xs font-semibold uppercase tracking-wider text-emerald-400 bg-emerald-950/70 border border-emerald-800/50 px-3.5 py-1.5 rounded-full">
-          Autonomous Workflow
+          Workflow
         </span>
         <h3 className="text-2xl sm:text-3xl font-bold text-slate-100 mt-4 tracking-tight">
-          From Profile to Opportunities in Three Stages
+          Opportunity Matching Workflow
         </h3>
       </div>
 

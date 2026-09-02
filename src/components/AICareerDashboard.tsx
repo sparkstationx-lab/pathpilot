@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { Opportunity, StudentProfile, AIMatchAnalysis, PageView } from '../types';
 import { analyzeOpportunityFit, getCachedMatch } from '../services/geminiService';
+import { calculateOpportunityMatch } from '../services/matchingService';
 
 interface AICareerDashboardProps {
   profile: StudentProfile;
@@ -48,48 +49,7 @@ export const AICareerDashboard: React.FC<AICareerDashboardProps> = ({
   const [matchData, setMatchData] = useState<Record<string, AIMatchAnalysis>>(cachedAnalyses);
   const [isLoadingAnalyses, setIsLoadingAnalyses] = useState<boolean>(false);
 
-  // Helper to compute local quick score if API hasn't loaded yet
-  const computeQuickScore = (opp: Opportunity): { score: number; skillMatch: string[]; skillGaps: string[]; eligibility: string; relevance: string } => {
-    const studentSkills = (profile.skills || []).map((s) => s.toLowerCase());
-    const requiredSkills = (opp.requiredSkills || []).map((s) => s.toLowerCase());
-    const preferredSkills = (opp.preferredSkills || []).map((s) => s.toLowerCase());
-
-    const matchedReq = (opp.requiredSkills || []).filter((s) =>
-      studentSkills.some((st) => st.includes(s.toLowerCase()) || s.toLowerCase().includes(st))
-    );
-    const matchedPref = (opp.preferredSkills || []).filter((s) =>
-      studentSkills.some((st) => st.includes(s.toLowerCase()) || s.toLowerCase().includes(st))
-    );
-    const missing = (opp.requiredSkills || []).filter((s) => !matchedReq.includes(s));
-
-    const totalReq = Math.max(requiredSkills.length, 1);
-    const reqRatio = matchedReq.length / totalReq;
-    const prefRatio = matchedPref.length / Math.max(preferredSkills.length, 1);
-
-    let score = Math.round(reqRatio * 65 + prefRatio * 20 + 10);
-    if (profile.careerGoal && opp.title.toLowerCase().includes(profile.careerGoal.toLowerCase().slice(0, 4))) {
-      score = Math.min(score + 10, 96);
-    }
-    score = Math.max(Math.min(score, 98), 45);
-
-    let eligibility = 'Eligible for Application';
-    if (missing.length === 0) {
-      eligibility = 'Highly Eligible — Meets Core Prerequisites';
-    } else if (missing.length <= 1) {
-      eligibility = 'Eligible — Minor Skill Gap Identified';
-    } else {
-      eligibility = 'Review Needed — Prerequisites Recommended';
-    }
-
-    const allMatched = [...matchedReq, ...matchedPref];
-    const skillMatch = allMatched.length > 0 ? allMatched : ['STEM Coursework', 'Academic Training'];
-    const skillGaps = missing.length > 0 ? missing : ['Advanced Frameworks'];
-    const relevance = `Directly aligns with your goal of ${profile.careerGoal || opp.field} by offering industry-grade exposure.`;
-
-    return { score, skillMatch, skillGaps, eligibility, relevance };
-  };
-
-  // Rank top opportunities by match score (cached or computed)
+  // Rank top opportunities by match score (cached or computed via client-side weighted algorithm)
   const rankedOpportunities = useMemo(() => {
     const scoredList = opportunities.map((opp) => {
       const existing = matchData[opp.id] || getCachedMatch(opp.id);
@@ -100,25 +60,11 @@ export const AICareerDashboard: React.FC<AICareerDashboardProps> = ({
           analysis: existing,
         };
       }
-      const quick = computeQuickScore(opp);
-      const fallbackAnalysis: AIMatchAnalysis = {
-        opportunityId: opp.id,
-        matchScore: quick.score,
-        eligibility: quick.eligibility,
-        skillMatch: quick.skillMatch,
-        careerRelevance: quick.relevance,
-        reasons: [
-          `Strong alignment with your background in ${profile.branchField || 'Computer Science'}.`,
-          `Supports your stated aspiration in ${profile.careerGoal || opp.field}.`,
-        ],
-        skillGaps: quick.skillGaps,
-        analyzedAt: new Date().toISOString(),
-        isAiGenerated: false,
-      };
+      const calculated = calculateOpportunityMatch(profile, opp);
       return {
         opportunity: opp,
-        score: quick.score,
-        analysis: fallbackAnalysis,
+        score: calculated.matchScore,
+        analysis: calculated,
       };
     });
 
@@ -246,13 +192,13 @@ export const AICareerDashboard: React.FC<AICareerDashboardProps> = ({
         <div className="space-y-2">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-950/70 border border-emerald-800/50 text-emerald-400 text-xs sm:text-sm font-medium">
             <Sparkles className="w-4 h-4" />
-            <span>Gemini AI Career Intelligence</span>
+            <span>AI Match Insights</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-slate-100 tracking-tight">
             AI Career Dashboard
           </h1>
           <p className="text-sm sm:text-base text-slate-400 max-w-2xl leading-relaxed">
-            Personalized match scores, eligibility status, and recommendations evaluated against your profile.
+            Opportunities ranked by compatibility with your profile.
           </p>
         </div>
 
@@ -398,12 +344,12 @@ export const AICareerDashboard: React.FC<AICareerDashboardProps> = ({
               {isLoadingAnalyses && (
                 <span className="inline-flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-950/60 px-2.5 py-1 rounded-lg border border-emerald-800/40 animate-pulse">
                   <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                  Gemini syncing
+                  Syncing
                 </span>
               )}
             </div>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">
-              Ranked by skill overlap and career goal trajectory
+              Ranked by profile compatibility
             </p>
           </div>
 
@@ -484,7 +430,7 @@ export const AICareerDashboard: React.FC<AICareerDashboardProps> = ({
                     <div>
                       <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2.5 flex items-center gap-2">
                         <Target className="w-4 h-4 text-teal-400" />
-                        Career Goal Relevance
+                        Career Relevance
                       </span>
                       <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
                         {analysis.careerRelevance || opp.summary}
@@ -497,7 +443,7 @@ export const AICareerDashboard: React.FC<AICareerDashboardProps> = ({
                     <div>
                       <span className="text-xs font-semibold text-emerald-300 uppercase tracking-wider block mb-3 flex items-center gap-2">
                         <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                        Key Skill Matches ({analysis.skillMatch.length})
+                        Matched Skills ({analysis.skillMatch.length})
                       </span>
                       <div className="flex flex-wrap gap-2">
                         {analysis.skillMatch.length > 0 ? (
@@ -510,7 +456,7 @@ export const AICareerDashboard: React.FC<AICareerDashboardProps> = ({
                             </span>
                           ))
                         ) : (
-                          <span className="text-xs text-slate-400 italic">Coursework alignment</span>
+                          <span className="text-xs text-slate-400 italic">Prerequisites satisfied</span>
                         )}
                       </div>
                     </div>
@@ -521,7 +467,7 @@ export const AICareerDashboard: React.FC<AICareerDashboardProps> = ({
                     <div>
                       <span className="text-xs font-semibold text-amber-300 uppercase tracking-wider block mb-3 flex items-center gap-2">
                         <AlertTriangle className="w-4 h-4 text-amber-400" />
-                        Recommended Skill Focus ({analysis.skillGaps.length})
+                        Skill Gaps ({analysis.skillGaps.length})
                       </span>
                       <div className="flex flex-wrap gap-2">
                         {analysis.skillGaps.length > 0 ? (
@@ -534,7 +480,7 @@ export const AICareerDashboard: React.FC<AICareerDashboardProps> = ({
                             </span>
                           ))
                         ) : (
-                          <span className="text-xs text-emerald-400 font-medium">✓ Prerequisites satisfied!</span>
+                          <span className="text-xs text-emerald-400 font-medium">✓ No skill gaps identified</span>
                         )}
                       </div>
                     </div>
@@ -572,7 +518,7 @@ export const AICareerDashboard: React.FC<AICareerDashboardProps> = ({
             <h2 className="text-lg sm:text-xl font-bold text-slate-100">
               Recommended Next Actions
             </h2>
-            <p className="text-xs sm:text-sm text-slate-400 mt-0.5">Targeted steps to strengthen your applications</p>
+            <p className="text-xs sm:text-sm text-slate-400 mt-0.5">Steps to strengthen your applications</p>
           </div>
         </div>
 
@@ -592,9 +538,9 @@ export const AICareerDashboard: React.FC<AICareerDashboardProps> = ({
               {topGaps.length > 0 ? (
                 <strong className="text-emerald-300">({topGaps.join(', ')})</strong>
               ) : (
-                'in advanced frameworks'
+                'in relevant technical areas'
               )}{' '}
-              through hands-on projects or coursework.
+              through coursework or projects.
             </p>
           </div>
 
@@ -609,7 +555,7 @@ export const AICareerDashboard: React.FC<AICareerDashboardProps> = ({
               </h3>
             </div>
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-              Highlight projects and problem-solving skills relevant to <strong className="text-slate-200">{profile.careerGoal || 'software engineering'}</strong>.
+              Highlight projects relevant to <strong className="text-slate-200">{profile.careerGoal || 'target roles'}</strong>.
             </p>
           </div>
 
@@ -639,7 +585,7 @@ export const AICareerDashboard: React.FC<AICareerDashboardProps> = ({
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition-all text-xs sm:text-sm cursor-pointer shadow-lg shadow-emerald-500/20 active:scale-98"
           >
             <Compass className="w-4 h-4" />
-            <span>Explore All {opportunities.length} Matched Opportunities</span>
+            <span>Explore All Opportunities ({opportunities.length})</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>

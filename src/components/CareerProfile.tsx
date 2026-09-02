@@ -337,7 +337,7 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({
                       Basic Information
                     </h2>
                     <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
-                      Enter your full name to personalize your opportunity match analysis and application drafts.
+                      Enter your name to personalize opportunity matching.
                     </p>
                   </div>
                 </div>
@@ -388,7 +388,7 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({
                       Education
                     </h2>
                     <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
-                      Select your degree, academic discipline, and current year to evaluate eligibility criteria.
+                      Select your degree, field of study, and current year.
                     </p>
                   </div>
                 </div>
@@ -474,7 +474,7 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({
                       Skills & Interests
                     </h2>
                     <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
-                      Add the technical competencies and domain interests that define your expertise.
+                      Add your technical skills and domain interests.
                     </p>
                   </div>
                 </div>
@@ -629,7 +629,7 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({
                       Career Goals
                     </h2>
                     <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
-                      Define your target role or the career trajectory you want to focus on.
+                      Define your target role or career trajectory.
                     </p>
                   </div>
                 </div>
@@ -705,7 +705,7 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({
                       Projects & Certifications
                     </h2>
                     <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
-                      Highlight practical projects and earned credentials to strengthen match accuracy.
+                      Add relevant projects and earned credentials.
                     </p>
                   </div>
                 </div>
@@ -921,7 +921,7 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({
           'Checking eligibility...',
           'Preparing your recommendations...',
         ]}
-        subtext="Configuring your personalized AI career intelligence and opportunity matcher."
+        subtext="Configuring your personalized opportunity recommendations."
         minDurationMs={2400}
       />
     </div>

@@ -11,8 +11,10 @@ import {
   BookOpen
 } from 'lucide-react';
 import { Opportunity, AIMatchAnalysis, StudentProfile } from '../types';
+import { calculateOpportunityMatch } from '../services/matchingService';
 
 interface OpportunityCardProps {
+
   opportunity: Opportunity;
   profile: StudentProfile | null;
   cachedAnalysis?: AIMatchAnalysis | null;
@@ -57,21 +59,11 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
     }
   };
 
-  // Quick skill matching calculation if no full AI analysis is cached yet
+  // Calculated weighted score from profile and opportunity data
   const calculateQuickScore = (): number => {
     if (cachedAnalysis) return cachedAnalysis.matchScore;
-    if (!profile || !profile.skills || profile.skills.length === 0) return 72;
-
-    const studentSkills = profile.skills.map((s) => s.toLowerCase());
-    const req = opportunity.requiredSkills.map((s) => s.toLowerCase());
-    const matched = req.filter((r) => studentSkills.some((s) => s.includes(r) || r.includes(s)));
-    const ratio = matched.length / Math.max(req.length, 1);
-    
-    let score = Math.round(50 + ratio * 42);
-    if (profile.careerGoal && opportunity.title.toLowerCase().includes(profile.careerGoal.toLowerCase().slice(0, 4))) {
-      score = Math.min(score + 6, 98);
-    }
-    return Math.min(Math.max(score, 55), 96);
+    if (!profile) return 72;
+    return calculateOpportunityMatch(profile, opportunity).matchScore;
   };
 
   const matchScore = calculateQuickScore();

@@ -217,14 +217,14 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
             <div>
               <div className="flex items-center gap-2.5">
                 <h2 className="text-xl sm:text-2xl font-bold text-slate-100">
-                  AI Fit & Compatibility Analysis
+                  Fit & Compatibility Analysis
                 </h2>
                 <span className="text-xs font-semibold tracking-wide uppercase px-2.5 py-1 rounded-full bg-emerald-950/70 text-emerald-400 border border-emerald-800/50">
-                  Gemini Flash
+                  AI Match
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                Evaluated against your profile and target role
+                Evaluated against your profile
               </p>
             </div>
           </div>
@@ -236,7 +236,7 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
             className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-800 text-slate-200 border border-slate-700/70 hover:border-emerald-500/40 transition-all disabled:opacity-50 self-start sm:self-auto cursor-pointer shadow-sm"
           >
             <RefreshCw className={`w-4 h-4 text-emerald-400 ${isRefreshing ? 'animate-spin' : ''}`} />
-            <span>{isRefreshing ? 'Re-analyzing...' : 'Refresh AI Analysis'}</span>
+            <span>{isRefreshing ? 'Re-analyzing...' : 'Refresh Analysis'}</span>
           </button>
         </div>
 
@@ -254,7 +254,7 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
 
             <div className="space-y-1.5">
               <h3 className="text-lg font-bold text-slate-100 min-h-[28px] transition-all duration-300">
-                {loadingMessages[loadingStepIndex] || 'Analyzing match with Gemini AI...'}
+                {loadingMessages[loadingStepIndex] || 'Analyzing match compatibility...'}
               </h3>
               <p className="text-xs sm:text-sm text-slate-400">
                 Evaluating skills, coursework, and requirements for {opportunity.organization}.
@@ -370,15 +370,12 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
               {/* Skill Match / Strengths */}
               <div className="rounded-2xl border border-emerald-900/40 bg-emerald-950/20 p-6 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center gap-2.5 mb-3">
+                  <div className="flex items-center gap-2.5 mb-4">
                     <CheckCircle2 className="w-5 h-5 text-emerald-400" />
                     <h3 className="text-base font-bold text-emerald-200">
-                      Skill Match & Strengths ({analysis.skillMatch.length})
+                      Matched Skills ({analysis.skillMatch.length})
                     </h3>
                   </div>
-                  <p className="text-xs sm:text-sm text-slate-400 mb-4">
-                    Profile skills matching role requirements:
-                  </p>
                   <div className="flex flex-wrap gap-2">
                     {analysis.skillMatch.length > 0 ? (
                       analysis.skillMatch.map((skill, idx) => (
@@ -392,7 +389,7 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
                       ))
                     ) : (
                       <span className="text-xs text-slate-400 italic">
-                        No direct skill overlap found. Consider updating your skills in Career Profile.
+                        No direct skill overlap found.
                       </span>
                     )}
                   </div>
@@ -402,15 +399,12 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
               {/* Missing Skills / Skill Gaps */}
               <div className="rounded-2xl border border-amber-900/40 bg-amber-950/20 p-6 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center gap-2.5 mb-3">
+                  <div className="flex items-center gap-2.5 mb-4">
                     <AlertTriangle className="w-5 h-5 text-amber-400" />
                     <h3 className="text-base font-bold text-amber-200">
-                      Skill Gaps & Recommended Focus ({analysis.skillGaps.length})
+                      Skill Gaps ({analysis.skillGaps.length})
                     </h3>
                   </div>
-                  <p className="text-xs sm:text-sm text-slate-400 mb-4">
-                    Recommended skills to review before applying:
-                  </p>
                   <div className="flex flex-wrap gap-2">
                     {analysis.skillGaps.length > 0 ? (
                       analysis.skillGaps.map((gap, idx) => (
@@ -424,7 +418,7 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
                       ))
                     ) : (
                       <span className="text-xs sm:text-sm text-emerald-400 font-medium">
-                        ✓ No major skill gaps identified for this role!
+                        ✓ No major skill gaps identified
                       </span>
                     )}
                   </div>
@@ -437,7 +431,7 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
               <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-6 sm:p-7">
                 <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-emerald-400" />
-                  Why This Opportunity Is Recommended For You
+                  Why Recommended
                 </h3>
                 <ul className="space-y-3">
                   {analysis.reasons.map((reason, idx) => (
@@ -474,7 +468,7 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
           <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-7 sm:p-8">
             <h3 className="text-lg font-bold text-slate-100 mb-4 flex items-center gap-2.5">
               <FileText className="w-5 h-5 text-emerald-400" />
-              Role Description & Context
+              Description
             </h3>
             <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
               {opportunity.description}
@@ -522,7 +516,7 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
           <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-7 space-y-6">
             <div>
               <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
-                Required Technical Skills
+                Required Skills
               </h4>
               <div className="flex flex-wrap gap-2">
                 {opportunity.requiredSkills.map((skill, idx) => (
@@ -538,7 +532,7 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
 
             <div>
               <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
-                Preferred / Bonus Skills
+                Preferred Skills
               </h4>
               <div className="flex flex-wrap gap-2">
                 {opportunity.preferredSkills.map((skill, idx) => (
@@ -556,7 +550,7 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
           {/* Quick Actions Card */}
           <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-7 space-y-4">
             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-              Application Workflow
+              Application Generator
             </h4>
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
               Generate tailored resume summaries, cover letters, and outreach emails.
@@ -572,13 +566,13 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
               className="w-full py-3 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm transition-all shadow-md shadow-emerald-950/40 cursor-pointer flex items-center justify-center gap-2 active:scale-98"
             >
               <Sparkles className="w-4 h-4 text-slate-950" />
-              <span>Generate Application Suite</span>
+              <span>Generate Application Materials</span>
             </button>
             <button
               onClick={onBack}
               className="w-full py-2.5 px-4 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-300 font-semibold text-xs border border-slate-700/70 transition-all cursor-pointer"
             >
-              Browse Other Opportunities
+              Back to Opportunities
             </button>
           </div>
         </div>

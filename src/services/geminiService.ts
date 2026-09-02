@@ -1,4 +1,5 @@
 import { StudentProfile, Opportunity, AIMatchAnalysis, AIApplicationMaterials } from '../types';
+import { calculateOpportunityMatch } from './matchingService';
 
 const MATCH_CACHE_KEY = 'autonomous_career_agent_matches';
 const APPLICATION_CACHE_KEY = 'autonomous_career_agent_applications';
@@ -91,6 +92,10 @@ export async function generateApplicationMaterials(
   }
 }
 
+/**
+ * Fully client-side AI Opportunity Analysis:
+ * Calculates weighted match score, eligibility, skill match, career relevance, reasons, and skill gaps locally.
+ */
 export async function analyzeOpportunityFit(
   profile: StudentProfile,
   opportunity: Opportunity,
@@ -101,36 +106,9 @@ export async function analyzeOpportunityFit(
     if (cached) return cached;
   }
 
-  try {
-    const response = await fetch('/api/match-opportunity', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ profile, opportunity }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Server returned status ${response.status}`);
-    }
-
-    const data = await response.json();
-    const result: AIMatchAnalysis = {
-      opportunityId: opportunity.id,
-      matchScore: typeof data.matchScore === 'number' ? data.matchScore : 75,
-      eligibility: data.eligibility || 'Eligible for Application',
-      skillMatch: Array.isArray(data.skillMatch) ? data.skillMatch : [],
-      careerRelevance: data.careerRelevance || '',
-      reasons: Array.isArray(data.reasons) ? data.reasons : [],
-      skillGaps: Array.isArray(data.skillGaps) ? data.skillGaps : [],
-      analyzedAt: data.analyzedAt || new Date().toISOString(),
-      isAiGenerated: !!data.isAiGenerated,
-    };
-
-    saveCachedMatch(opportunity.id, result);
-    return result;
-  } catch (error: any) {
-    console.error('Error fetching AI opportunity match:', error);
-    throw new Error(error.message || 'Unable to connect to AI match service. Please try again.');
-  }
+  // Calculate using client-side weighted matching engine
+  const result = calculateOpportunityMatch(profile, opportunity);
+  saveCachedMatch(opportunity.id, result);
+  return result;
 }
+

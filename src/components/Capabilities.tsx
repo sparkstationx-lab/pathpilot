@@ -7,43 +7,43 @@ export const Capabilities: React.FC = () => {
     {
       id: 'cap-discover',
       title: 'Discover Opportunities',
-      tagline: 'Multi-category discovery',
+      tagline: 'Opportunity Search',
       icon: Search,
       accent: 'emerald',
       description:
-        'Curated internships, jobs, scholarships, and certifications matched to your field of study.',
+        'Curated internships, jobs, scholarships, and certifications.',
       bullets: [
         'Internships & early career jobs',
-        'Academic & merit scholarships',
-        'Industry-recognized certifications',
+        'Academic scholarships',
+        'Industry certifications',
       ],
     },
     {
       id: 'cap-match',
-      title: 'AI Match & Eligibility',
-      tagline: 'Match & gap analysis',
+      title: 'Match & Eligibility',
+      tagline: 'Compatibility & Gaps',
       icon: Sparkles,
       accent: 'teal',
       description:
-        'Transparent compatibility ratings, requirement alignment, and targeted skill gap identification.',
+        'Compatibility ratings, requirement checks, and skill gap identification.',
       bullets: [
-        'Coursework & skill requirement mapping',
-        'Targeted skill gap identification',
-        'Relevance scoring based on your profile',
+        'Skill requirement mapping',
+        'Skill gap identification',
+        'Relevance scoring',
       ],
     },
     {
       id: 'cap-apply',
       title: 'Application Assistance',
-      tagline: 'Tailored application suite',
+      tagline: 'Application Suite',
       icon: FileText,
       accent: 'cyan',
       description:
-        'Role-specific resume summaries, targeted cover letters, and outreach emails tailored to the opportunity.',
+        'Role-specific resume summaries, cover letters, and outreach emails.',
       bullets: [
-        'Role-specific resume summary points',
-        'Customized student cover letters',
-        'Professional application email drafts',
+        'Resume summary statements',
+        'Targeted cover letters',
+        'Outreach email drafts',
       ],
     },
   ];
@@ -56,10 +56,10 @@ export const Capabilities: React.FC = () => {
             Core Capabilities
           </span>
           <h2 className="text-3xl sm:text-4xl font-bold text-slate-100 mt-4 tracking-tight">
-            Designed for the Student Career Journey
+            Designed for Student Opportunity Discovery
           </h2>
           <p className="text-base sm:text-lg text-slate-400 mt-3 leading-relaxed">
-            Discover, evaluate, and apply for relevant opportunities with transparent AI intelligence.
+            Discover, evaluate, and prepare applications for relevant opportunities.
           </p>
         </div>
 

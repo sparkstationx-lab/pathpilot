@@ -11,24 +11,24 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onNavigate }) => {
   const steps = [
     {
       step: '01',
-      title: 'Create Your Career Profile',
+      title: 'Set Up Your Profile',
       icon: UserCheck,
       description:
-        'Add your academic major, technical skills, coursework, and target roles.',
+        'Add your degree, skills, projects, and target career goals.',
     },
     {
       step: '02',
-      title: 'AI Matches & Highlights Gaps',
+      title: 'Match & Identify Gaps',
       icon: Sparkles,
       description:
-        'AI evaluates your profile against role requirements and pinpoints skill gaps.',
+        'Evaluate eligibility against requirements and identify skill gaps.',
     },
     {
       step: '03',
-      title: 'Generate Custom Materials',
+      title: 'Generate Application Materials',
       icon: Send,
       description:
-        'Generate tailored resume summaries, cover letters, and outreach emails.',
+        'Create tailored resume summaries, cover letters, and outreach emails.',
     },
   ];
 
@@ -37,13 +37,13 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onNavigate }) => {
       <div className="max-w-6xl mx-auto px-6 sm:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-semibold uppercase tracking-wider text-emerald-400 bg-emerald-950/70 border border-emerald-800/50 px-3.5 py-1.5 rounded-full">
-            Simple Process
+            How It Works
           </span>
           <h2 className="text-3xl sm:text-4xl font-bold text-slate-100 mt-4 tracking-tight">
-            How PathPilot Career Agent Works
+            How PathPilot Works
           </h2>
           <p className="text-base sm:text-lg text-slate-400 mt-3 leading-relaxed">
-            A seamless three-step pipeline for autonomous student career discovery.
+            Three steps to match and apply for career opportunities.
           </p>
         </div>
 
@@ -83,10 +83,10 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onNavigate }) => {
         {/* Action Banner */}
         <div className="rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900/80 to-teal-950/40 border border-emerald-500/20 p-10 sm:p-12 text-center max-w-4xl mx-auto shadow-2xl shadow-black/30">
           <h3 className="text-2xl sm:text-3xl font-bold text-slate-100 mb-3 tracking-tight">
-            Ready to find your matched opportunities?
+            Ready to explore your matches?
           </h3>
           <p className="text-base text-slate-300/90 mb-8 max-w-xl mx-auto leading-relaxed">
-            Build your profile to discover matched internships, jobs, scholarships, and certifications.
+            Set up your profile to discover matched opportunities.
           </p>
           <button
             id="how-it-works-cta"

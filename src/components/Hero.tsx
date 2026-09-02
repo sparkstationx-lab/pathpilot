@@ -15,7 +15,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onScrollToSection }) => 
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[450px] bg-emerald-500/10 blur-[140px] rounded-full pointer-events-none -z-10" />
 
       <div className="max-w-5xl mx-auto px-6 sm:px-8 text-center">
-        {/* Small badge: "AI-Powered Career Assistant" */}
+        {/* Small badge */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -26,7 +26,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onScrollToSection }) => 
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
           </span>
-          <span>Gemini AI Opportunity Matching</span>
+          <span>Opportunity Match Engine</span>
         </motion.div>
 
         {/* Main Heading */}
@@ -49,7 +49,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onScrollToSection }) => 
           transition={{ duration: 0.4, delay: 0.2 }}
           className="text-base sm:text-lg text-slate-300/90 max-w-2xl mx-auto leading-relaxed mb-10"
         >
-          Discover internships, jobs, scholarships, and certifications matched to your skills, with instant eligibility and gap analysis powered by Gemini AI.
+          Internships, jobs, scholarships, and certifications matched to your skills, with eligibility and skill gap insights.
         </motion.p>
 
         {/* Primary & Secondary CTAs */}
@@ -96,15 +96,15 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onScrollToSection }) => 
         >
           <span className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span>Internships, Jobs & Certs</span>
+            <span>Internships, Jobs & Certifications</span>
           </span>
           <span className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span>Gemini AI Match Score (0–100)</span>
+            <span>Match Scores (0–100)</span>
           </span>
           <span className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span>Skill Gaps & Strengths</span>
+            <span>Skill Gap Analysis</span>
           </span>
         </motion.div>
       </div>

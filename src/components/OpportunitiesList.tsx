@@ -70,14 +70,14 @@ export const OpportunitiesList: React.FC<OpportunitiesListProps> = ({
           <div>
             <div className="flex items-center gap-3 flex-wrap">
               <h2 className="text-lg sm:text-xl font-bold text-slate-100">
-                {profile?.fullName ? `Personalized Feed for ${profile.fullName}` : 'Personalized Opportunity Matcher'}
+                {profile?.fullName ? `${profile.fullName}'s Opportunity Feed` : 'Opportunity Feed'}
               </h2>
               <span className="text-xs font-semibold uppercase px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                AI Active
+                Active Profile
               </span>
             </div>
             <p className="text-xs sm:text-sm text-slate-400 mt-2">
-              Targeting: <strong className="text-slate-200">{profile?.careerGoal || 'Software Engineering'}</strong> | Level: <span className="text-slate-300">{profile?.currentYear || '3rd Year'} {profile?.educationDegree || 'B.Tech / BS'}</span>
+              Targeting: <strong className="text-slate-200">{profile?.careerGoal || 'Software Engineering'}</strong> | Level: <span className="text-slate-300">{profile?.currentYear || '3rd Year'} {profile?.educationDegree || 'B.Tech'}</span>
             </p>
           </div>
         </div>
@@ -109,10 +109,10 @@ export const OpportunitiesList: React.FC<OpportunitiesListProps> = ({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-1">
           <h1 className="text-3xl sm:text-4xl font-bold text-slate-100 tracking-tight">
-            Curated Opportunities
+            Opportunities
           </h1>
           <p className="text-sm sm:text-base text-slate-400">
-            Showing {filteredOpportunities.length} opportunities ranked with AI match scores
+            {filteredOpportunities.length} opportunities available
           </p>
         </div>
 
@@ -182,7 +182,7 @@ export const OpportunitiesList: React.FC<OpportunitiesListProps> = ({
               No matching opportunities found
             </h3>
             <p className="text-sm text-slate-400 max-w-sm mx-auto">
-              Try adjusting your search terms or clearing category filters to view all listings.
+              Try adjusting your search query or category filters.
             </p>
           </div>
           <button
