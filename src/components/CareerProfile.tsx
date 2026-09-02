@@ -28,9 +28,9 @@ const STORAGE_KEY = 'autonomous_career_agent_profile';
 
 const INITIAL_PROFILE: StudentProfile = {
   fullName: '',
-  educationDegree: 'Bachelor of Technology (B.Tech)',
+  educationDegree: '',
   branchField: '',
-  currentYear: '3rd Year',
+  currentYear: '',
   skills: [],
   interests: [],
   careerGoal: '',
@@ -206,8 +206,16 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({
         return false;
       }
     } else if (step === 2) {
+      if (!profile.educationDegree.trim()) {
+        setErrorMsg('Please select your degree / education to proceed.');
+        return false;
+      }
       if (!profile.branchField.trim()) {
         setErrorMsg('Please specify your branch or field of study.');
+        return false;
+      }
+      if (!profile.currentYear.trim()) {
+        setErrorMsg('Please select your current year of study.');
         return false;
       }
     } else if (step === 4) {
@@ -363,7 +371,7 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({
                       }
                     }}
                     placeholder="e.g. Alex Rivera"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/30 transition-all"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/30 transition-all"
                   />
                 </div>
               </motion.div>
@@ -401,18 +409,26 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({
                     <select
                       id="educationDegree"
                       value={profile.educationDegree}
-                      onChange={(e) => setProfile({ ...profile, educationDegree: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-emerald-500/60 transition-colors"
+                      onChange={(e) => {
+                        setProfile({ ...profile, educationDegree: e.target.value });
+                        if (errorMsg) setErrorMsg(null);
+                      }}
+                      className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm focus:outline-none focus:border-emerald-500/60 transition-colors ${
+                        profile.educationDegree ? 'text-slate-100' : 'text-slate-500'
+                      }`}
                     >
-                      <option value="Bachelor of Technology (B.Tech)">Bachelor of Technology (B.Tech)</option>
-                      <option value="Bachelor of Science (B.S. / B.Sc)">Bachelor of Science (B.S. / B.Sc)</option>
-                      <option value="Bachelor of Engineering (B.E.)">Bachelor of Engineering (B.E.)</option>
-                      <option value="Bachelor of Computer Applications (BCA)">Bachelor of Computer Applications (BCA)</option>
-                      <option value="Master of Science (M.S. / M.Sc)">Master of Science (M.S. / M.Sc)</option>
-                      <option value="Master of Technology (M.Tech)">Master of Technology (M.Tech)</option>
-                      <option value="Master of Computer Applications (MCA)">Master of Computer Applications (MCA)</option>
-                      <option value="Diploma / Associate Degree">Diploma / Associate Degree</option>
-                      <option value="Other Degree / Self-Taught">Other Degree / Self-Taught</option>
+                      <option value="" disabled className="text-slate-500 bg-slate-950">
+                        Select an option
+                      </option>
+                      <option value="Bachelor of Technology (B.Tech)" className="text-slate-100 bg-slate-900">Bachelor of Technology (B.Tech)</option>
+                      <option value="Bachelor of Science (B.S. / B.Sc)" className="text-slate-100 bg-slate-900">Bachelor of Science (B.S. / B.Sc)</option>
+                      <option value="Bachelor of Engineering (B.E.)" className="text-slate-100 bg-slate-900">Bachelor of Engineering (B.E.)</option>
+                      <option value="Bachelor of Computer Applications (BCA)" className="text-slate-100 bg-slate-900">Bachelor of Computer Applications (BCA)</option>
+                      <option value="Master of Science (M.S. / M.Sc)" className="text-slate-100 bg-slate-900">Master of Science (M.S. / M.Sc)</option>
+                      <option value="Master of Technology (M.Tech)" className="text-slate-100 bg-slate-900">Master of Technology (M.Tech)</option>
+                      <option value="Master of Computer Applications (MCA)" className="text-slate-100 bg-slate-900">Master of Computer Applications (MCA)</option>
+                      <option value="Diploma / Associate Degree" className="text-slate-100 bg-slate-900">Diploma / Associate Degree</option>
+                      <option value="Other Degree / Self-Taught" className="text-slate-100 bg-slate-900">Other Degree / Self-Taught</option>
                     </select>
                   </div>
 
@@ -430,7 +446,7 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({
                         if (errorMsg) setErrorMsg(null);
                       }}
                       placeholder="e.g. Computer Science & Engineering, Information Technology"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/60 transition-colors"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/60 transition-colors"
                     />
                   </div>
 
@@ -441,14 +457,22 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({
                     <select
                       id="currentYear"
                       value={profile.currentYear}
-                      onChange={(e) => setProfile({ ...profile, currentYear: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-emerald-500/60 transition-colors"
+                      onChange={(e) => {
+                        setProfile({ ...profile, currentYear: e.target.value });
+                        if (errorMsg) setErrorMsg(null);
+                      }}
+                      className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm focus:outline-none focus:border-emerald-500/60 transition-colors ${
+                        profile.currentYear ? 'text-slate-100' : 'text-slate-500'
+                      }`}
                     >
-                      <option value="1st Year">1st Year (Freshman)</option>
-                      <option value="2nd Year">2nd Year (Sophomore)</option>
-                      <option value="3rd Year">3rd Year (Junior)</option>
-                      <option value="4th Year / Final Year">4th Year (Senior / Final Year)</option>
-                      <option value="Recent Graduate">Recent Graduate</option>
+                      <option value="" disabled className="text-slate-500 bg-slate-950">
+                        Select an option
+                      </option>
+                      <option value="1st Year" className="text-slate-100 bg-slate-900">1st Year (Freshman)</option>
+                      <option value="2nd Year" className="text-slate-100 bg-slate-900">2nd Year (Sophomore)</option>
+                      <option value="3rd Year" className="text-slate-100 bg-slate-900">3rd Year (Junior)</option>
+                      <option value="4th Year / Final Year" className="text-slate-100 bg-slate-900">4th Year (Senior / Final Year)</option>
+                      <option value="Recent Graduate" className="text-slate-100 bg-slate-900">Recent Graduate</option>
                     </select>
                   </div>
                 </div>
@@ -498,7 +522,7 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({
                           }
                         }}
                         placeholder="Type skill & press Enter (e.g. Python, React)"
-                        className="flex-1 px-3.5 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs sm:text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/60 transition-colors"
+                        className="flex-1 px-3.5 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs sm:text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/60 transition-colors"
                       />
                       <button
                         type="button"
@@ -569,7 +593,7 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({
                           }
                         }}
                         placeholder="Type interest & press Enter (e.g. AI, Cloud)"
-                        className="flex-1 px-3.5 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs sm:text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/60 transition-colors"
+                        className="flex-1 px-3.5 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs sm:text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/60 transition-colors"
                       />
                       <button
                         type="button"
@@ -656,7 +680,7 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({
                         }
                       }}
                       placeholder="e.g. Software Engineer / Full Stack Developer"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/60 transition-colors"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/60 transition-colors"
                     />
                   </div>
 
@@ -702,7 +726,7 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({
                   </div>
                   <div>
                     <h2 className="text-lg font-bold text-slate-100">
-                      Projects & Certifications
+                       Projects & Certifications
                     </h2>
                     <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
                       Add relevant projects and earned credentials.
@@ -729,7 +753,7 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({
                           }
                         }}
                         placeholder="e.g. Web Application (React, Node.js)"
-                        className="flex-1 px-3.5 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs sm:text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/60 transition-colors"
+                        className="flex-1 px-3.5 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs sm:text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/60 transition-colors"
                       />
                       <button
                         type="button"
@@ -789,7 +813,7 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({
                           }
                         }}
                         placeholder="e.g. AWS Cloud Certified"
-                        className="flex-1 px-3.5 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs sm:text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/60 transition-colors"
+                        className="flex-1 px-3.5 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs sm:text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500/60 transition-colors"
                       />
                       <button
                         type="button"

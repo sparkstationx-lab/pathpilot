@@ -230,11 +230,11 @@ export const AICareerDashboard: React.FC<AICareerDashboardProps> = ({
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-slate-300 mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-0.5">
-                <span>{profile.educationDegree}</span>
+                <span>{profile.educationDegree || 'Degree not specified'}</span>
                 <span className="text-slate-600">•</span>
-                <span>{profile.branchField || 'Computer Science'}</span>
+                <span>{profile.branchField || 'Field not specified'}</span>
                 <span className="text-slate-600">•</span>
-                <span className="text-emerald-400 font-medium">{profile.currentYear}</span>
+                <span className="text-emerald-400 font-medium">{profile.currentYear || 'Year not specified'}</span>
               </p>
             </div>
           </div>

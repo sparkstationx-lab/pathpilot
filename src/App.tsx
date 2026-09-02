@@ -21,23 +21,33 @@ import { AILoadingOverlay } from './components/AILoadingOverlay';
 const STORAGE_KEY = 'autonomous_career_agent_profile';
 const MATCH_CACHE_KEY = 'autonomous_career_agent_matches';
 
-const DEFAULT_PROFILE: StudentProfile = {
-  fullName: 'Alex Rivera',
-  educationDegree: 'Bachelor of Technology (B.Tech)',
-  branchField: 'Computer Science & Engineering',
-  currentYear: '3rd Year',
-  skills: ['Python', 'Data Structures', 'REST APIs', 'Git', 'JavaScript', 'SQL'],
-  interests: ['Software Development', 'Artificial Intelligence', 'Cloud Architecture'],
-  careerGoal: 'Software Engineer / Full Stack Developer',
-  projects: ['Real-Time Web Application (React, Node.js)', 'Algorithms Visualizer (Python)'],
-  certifications: ['AWS Cloud Foundations Certified'],
+const EMPTY_PROFILE: StudentProfile = {
+  fullName: '',
+  educationDegree: '',
+  branchField: '',
+  currentYear: '',
+  skills: [],
+  interests: [],
+  careerGoal: '',
+  projects: [],
+  certifications: [],
 };
 
 export default function App() {
   const [currentView, setCurrentView] = useState<PageView>('landing');
   const [previousView, setPreviousView] = useState<PageView>('landing');
   const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null);
-  const [profile, setProfile] = useState<StudentProfile>(DEFAULT_PROFILE);
+  const [profile, setProfile] = useState<StudentProfile>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (e) {
+      console.error('Failed to load initial profile:', e);
+    }
+    return EMPTY_PROFILE;
+  });
   const [cachedAnalyses, setCachedAnalyses] = useState<Record<string, AIMatchAnalysis>>({});
   const [aiLoadingState, setAiLoadingState] = useState<{
     isOpen: boolean;
@@ -52,8 +62,6 @@ export default function App() {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         setProfile(JSON.parse(saved));
-      } else {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_PROFILE));
       }
 
       const rawMatches = sessionStorage.getItem(MATCH_CACHE_KEY);
