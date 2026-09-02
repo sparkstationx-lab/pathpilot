@@ -30,29 +30,56 @@ const applicationMemoryCache = new Map<string, any>();
 // Helper function to sleep
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Helper to call Gemini with retry and model fallback on 503 / 429 / UNAVAILABLE
+// Helper to wrap promises with a timeout
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`Operation timed out after ${ms}ms`)), ms)
+    ),
+  ]);
+}
+
+// Clean markdown code blocks from JSON output if present
+function cleanJsonString(raw: string): string {
+  let cleaned = raw.trim();
+  if (cleaned.startsWith('```json')) {
+    cleaned = cleaned.slice(7);
+  } else if (cleaned.startsWith('```')) {
+    cleaned = cleaned.slice(3);
+  }
+  if (cleaned.endsWith('```')) {
+    cleaned = cleaned.slice(0, -3);
+  }
+  return cleaned.trim();
+}
+
+// Helper to call Gemini with retry, timeout and model fallback
 export async function generateContentWithRetry(
   ai: GoogleGenAI,
   prompt: string,
   schema: any,
-  modelsToTry: string[] = ['gemini-3.7-flash', 'gemini-flash-latest']
+  modelsToTry: string[] = ['gemini-3.1-flash-lite', 'gemini-flash-latest', 'gemini-3.7-flash']
 ): Promise<string> {
   let lastError: any = null;
 
   for (const model of modelsToTry) {
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
-        const response = await ai.models.generateContent({
-          model: model,
-          contents: prompt,
-          config: {
-            responseMimeType: 'application/json',
-            responseSchema: schema,
-          },
-        });
+        const response = await withTimeout(
+          ai.models.generateContent({
+            model: model,
+            contents: prompt,
+            config: {
+              responseMimeType: 'application/json',
+              responseSchema: schema,
+            },
+          }),
+          9000
+        );
 
         if (response.text && response.text.trim()) {
-          return response.text.trim();
+          return cleanJsonString(response.text);
         }
       } catch (err: any) {
         lastError = err;
@@ -63,10 +90,11 @@ export async function generateContentWithRetry(
           errMsg.includes('high demand') ||
           errMsg.includes('429') ||
           errMsg.includes('RESOURCE_EXHAUSTED') ||
+          errMsg.includes('timed out') ||
           errMsg.includes('500');
 
         if (isTransient && attempt === 0) {
-          await sleep(600);
+          await sleep(500);
           continue;
         }
         break;
