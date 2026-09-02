@@ -31,6 +31,63 @@ function getGeminiClient(): GoogleGenAI | null {
   return aiClient;
 }
 
+// In-memory cache for fast responses & deduplicating AI calls
+const analysisMemoryCache = new Map<string, any>();
+const applicationMemoryCache = new Map<string, any>();
+
+// Helper function to sleep
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Helper to call Gemini with retry and model fallback on 503 / 429 / UNAVAILABLE
+async function generateContentWithRetry(
+  ai: GoogleGenAI,
+  prompt: string,
+  schema: any,
+  modelsToTry: string[] = ['gemini-3.7-flash', 'gemini-flash-latest']
+): Promise<string> {
+  let lastError: any = null;
+
+  for (const model of modelsToTry) {
+    // Retry up to 2 times for each model if experiencing 503 or transient issues
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const response = await ai.models.generateContent({
+          model: model,
+          contents: prompt,
+          config: {
+            responseMimeType: 'application/json',
+            responseSchema: schema,
+          },
+        });
+
+        if (response.text && response.text.trim()) {
+          return response.text.trim();
+        }
+      } catch (err: any) {
+        lastError = err;
+        const errMsg = err?.message || String(err);
+        const isTransient =
+          errMsg.includes('503') ||
+          errMsg.includes('UNAVAILABLE') ||
+          errMsg.includes('high demand') ||
+          errMsg.includes('429') ||
+          errMsg.includes('RESOURCE_EXHAUSTED') ||
+          errMsg.includes('500');
+
+        if (isTransient && attempt === 0) {
+          // Wait before retrying
+          await sleep(600);
+          continue;
+        }
+        // If not transient or second attempt failed, break to next model
+        break;
+      }
+    }
+  }
+
+  throw lastError || new Error('All Gemini models unavailable');
+}
+
 // Fallback matching algorithm when Gemini API key is not present or API call errors
 function calculateFallbackAnalysis(profile: any, opportunity: any) {
   const studentSkills = (profile.skills || []).map((s: string) => s.toLowerCase());
@@ -187,6 +244,12 @@ app.post('/api/match-opportunity', async (req, res) => {
     });
   }
 
+  // Check in-memory cache first (keyed by opportunityId and student profile hash)
+  const cacheKey = `${opportunity.id}_${studentProfile.fullName}_${(studentProfile.skills || []).join(',')}_${studentProfile.careerGoal}`;
+  if (analysisMemoryCache.has(cacheKey)) {
+    return res.json(analysisMemoryCache.get(cacheKey));
+  }
+
   try {
     const prompt = `You are the core intelligence of "Autonomous AI Career Agent", a personal career assistant for students.
 Analyze how well this student's career profile fits the specific opportunity.
@@ -222,51 +285,44 @@ Return structured analysis:
 5. reasons: 2 to 3 concise, bulleted reasons why this opportunity is recommended for them.
 6. skillGaps: List of specific missing skills, tools, or prerequisite gaps they should address.`;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-3.7-flash',
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            matchScore: {
-              type: Type.INTEGER,
-              description: 'Match score between 0 and 100 based on skill overlap and eligibility',
-            },
-            eligibility: {
-              type: Type.STRING,
-              description: 'Eligibility assessment (e.g. Fully Eligible, Eligible with Minor Skill Gaps)',
-            },
-            skillMatch: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING },
-              description: 'List of matched skills that the student possesses',
-            },
-            careerRelevance: {
-              type: Type.STRING,
-              description: 'Explanation of how this opportunity aligns with the student career goal',
-            },
-            reasons: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING },
-              description: 'Key reasons why this opportunity is recommended for the student',
-            },
-            skillGaps: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING },
-              description: 'Specific missing skills, tools, or qualifications the student should develop',
-            },
-          },
-          required: ['matchScore', 'eligibility', 'skillMatch', 'careerRelevance', 'reasons', 'skillGaps'],
+    const schema = {
+      type: Type.OBJECT,
+      properties: {
+        matchScore: {
+          type: Type.INTEGER,
+          description: 'Match score between 0 and 100 based on skill overlap and eligibility',
+        },
+        eligibility: {
+          type: Type.STRING,
+          description: 'Eligibility assessment (e.g. Fully Eligible, Eligible with Minor Skill Gaps)',
+        },
+        skillMatch: {
+          type: Type.ARRAY,
+          items: { type: Type.STRING },
+          description: 'List of matched skills that the student possesses',
+        },
+        careerRelevance: {
+          type: Type.STRING,
+          description: 'Explanation of how this opportunity aligns with the student career goal',
+        },
+        reasons: {
+          type: Type.ARRAY,
+          items: { type: Type.STRING },
+          description: 'Key reasons why this opportunity is recommended for the student',
+        },
+        skillGaps: {
+          type: Type.ARRAY,
+          items: { type: Type.STRING },
+          description: 'Specific missing skills, tools, or qualifications the student should develop',
         },
       },
-    });
+      required: ['matchScore', 'eligibility', 'skillMatch', 'careerRelevance', 'reasons', 'skillGaps'],
+    };
 
-    const responseText = response.text ? response.text.trim() : '';
+    const responseText = await generateContentWithRetry(ai, prompt, schema);
     const parsedData = JSON.parse(responseText);
 
-    return res.json({
+    const result = {
       opportunityId: opportunity.id,
       matchScore: Math.min(Math.max(parsedData.matchScore || 75, 10), 100),
       eligibility: parsedData.eligibility || 'Eligible for Application',
@@ -276,18 +332,22 @@ Return structured analysis:
       skillGaps: parsedData.skillGaps || [],
       analyzedAt: new Date().toISOString(),
       isAiGenerated: true,
-    });
+    };
+
+    analysisMemoryCache.set(cacheKey, result);
+    return res.json(result);
   } catch (err: any) {
-    console.error('Error calling Gemini API for opportunity match:', err);
+    console.warn('Gemini API match analysis temporary issue, utilizing resilient fallback engine:', err?.message || err);
     // Graceful fallback on API error
     const fallback = calculateFallbackAnalysis(studentProfile, opportunity);
-    return res.json({
+    const result = {
       ...fallback,
       opportunityId: opportunity.id,
       analyzedAt: new Date().toISOString(),
       fallbackDueToError: true,
-      errorMessage: err.message || 'Gemini service temporary issue',
-    });
+    };
+    analysisMemoryCache.set(cacheKey, result);
+    return res.json(result);
   }
 });
 
@@ -317,6 +377,12 @@ app.post('/api/generate-application', async (req, res) => {
   if (!ai) {
     const fallback = calculateFallbackApplication(studentProfile, opportunity);
     return res.json(fallback);
+  }
+
+  // Check in-memory cache first
+  const cacheKey = `${opportunity.id}_${studentProfile.fullName}_${(studentProfile.skills || []).join(',')}_${studentProfile.careerGoal}`;
+  if (applicationMemoryCache.has(cacheKey)) {
+    return res.json(applicationMemoryCache.get(cacheKey));
   }
 
   try {
@@ -358,46 +424,39 @@ GENERATE:
    - "subject": A crisp, professional email subject line for the application.
    - "body": A courteous, concise 2-3 paragraph application email with salutation, key qualifications summary, mention of attached resume/portfolio, and professional sign-off.`;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-3.7-flash',
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: {
+    const schema = {
+      type: Type.OBJECT,
+      properties: {
+        resumeSummary: {
+          type: Type.STRING,
+          description: 'A 2-3 sentence tailored professional resume summary using verified student data',
+        },
+        coverLetter: {
+          type: Type.STRING,
+          description: 'A full 3-4 paragraph formal cover letter for this opportunity',
+        },
+        applicationEmail: {
           type: Type.OBJECT,
           properties: {
-            resumeSummary: {
+            subject: {
               type: Type.STRING,
-              description: 'A 2-3 sentence tailored professional resume summary using verified student data',
+              description: 'Professional subject line for application email',
             },
-            coverLetter: {
+            body: {
               type: Type.STRING,
-              description: 'A full 3-4 paragraph formal cover letter for this opportunity',
-            },
-            applicationEmail: {
-              type: Type.OBJECT,
-              properties: {
-                subject: {
-                  type: Type.STRING,
-                  description: 'Professional subject line for application email',
-                },
-                body: {
-                  type: Type.STRING,
-                  description: 'Polished body text for the outreach/application email',
-                },
-              },
-              required: ['subject', 'body'],
+              description: 'Polished body text for the outreach/application email',
             },
           },
-          required: ['resumeSummary', 'coverLetter', 'applicationEmail'],
+          required: ['subject', 'body'],
         },
       },
-    });
+      required: ['resumeSummary', 'coverLetter', 'applicationEmail'],
+    };
 
-    const responseText = response.text ? response.text.trim() : '';
+    const responseText = await generateContentWithRetry(ai, prompt, schema);
     const parsedData = JSON.parse(responseText);
 
-    return res.json({
+    const result = {
       opportunityId: opportunity.id,
       resumeSummary: parsedData.resumeSummary || '',
       coverLetter: parsedData.coverLetter || '',
@@ -407,15 +466,19 @@ GENERATE:
       },
       generatedAt: new Date().toISOString(),
       isAiGenerated: true,
-    });
+    };
+
+    applicationMemoryCache.set(cacheKey, result);
+    return res.json(result);
   } catch (err: any) {
-    console.error('Error calling Gemini API for application generation:', err);
+    console.warn('Gemini API application generation temporary issue, utilizing resilient fallback engine:', err?.message || err);
     const fallback = calculateFallbackApplication(studentProfile, opportunity);
-    return res.json({
+    const result = {
       ...fallback,
       fallbackDueToError: true,
-      errorMessage: err.message || 'Gemini service temporary issue',
-    });
+    };
+    applicationMemoryCache.set(cacheKey, result);
+    return res.json(result);
   }
 });
 

@@ -184,7 +184,7 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
-                Evaluated against your saved profile, target role, and coursework
+                Evaluated against your profile and target role
               </p>
             </div>
           </div>
@@ -209,7 +209,7 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
                 Analyzing match with Gemini AI...
               </p>
               <p className="text-xs text-slate-400 mt-1">
-                Comparing required skills, eligibility criteria, and your career trajectory.
+                Evaluating skills and eligibility requirements.
               </p>
             </div>
           </div>
@@ -257,7 +257,7 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
                     {getScoreDescription(analysis.matchScore)}
                   </p>
                   <p className="text-[11px] text-slate-400 mt-0.5">
-                    Skills & trajectory compatibility
+                    Skills & goals compatibility
                   </p>
                 </div>
               </div>
@@ -275,7 +275,7 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
                     {analysis.eligibility}
                   </p>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    Evaluated against academic level ({profile?.currentYear || 'Current'}), branch ({profile?.branchField || 'STEM'}), and prerequisites.
+                    Based on your academic year, major, and course prerequisites.
                   </p>
                 </div>
               </div>
@@ -309,7 +309,7 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
                   </h3>
                 </div>
                 <p className="text-xs text-slate-400 mb-3.5">
-                  Skills from your profile that directly satisfy requirements:
+                  Profile skills matching role requirements:
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {analysis.skillMatch.length > 0 ? (
@@ -339,7 +339,7 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
                   </h3>
                 </div>
                 <p className="text-xs text-slate-400 mb-3.5">
-                  Skills or tooling to review before applying to maximize your success:
+                  Recommended skills to review before applying:
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {analysis.skillGaps.length > 0 ? (
@@ -488,7 +488,7 @@ export const OpportunityDetail: React.FC<OpportunityDetailProps> = ({
               Application Workflow
             </h4>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Use Gemini AI to instantly generate a tailored resume summary, cover letter, and application outreach email.
+              Generate tailored resume summaries, cover letters, and outreach emails.
             </p>
             <button
               id="sidebar-generate-application-btn"

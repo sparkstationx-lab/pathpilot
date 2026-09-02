@@ -106,7 +106,7 @@ ${materials.applicationEmail.body}
             Tailored Application Suite
           </h2>
           <p className="text-xs sm:text-sm text-slate-400 max-w-2xl leading-relaxed">
-            Generate a personalized resume summary, tailored cover letter, and formal outreach email based strictly on your verified student profile.
+            Generate a tailored resume summary, cover letter, and outreach email based on your profile.
           </p>
         </div>
 
@@ -190,7 +190,7 @@ ${materials.applicationEmail.body}
               Ready to Apply for {opportunity.title}?
             </h3>
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-              Click below to generate an industry-standard application package with a customized resume summary, cover letter, and formal email tailored to {opportunity.organization}.
+              Generate a customized application package tailored to {opportunity.organization}.
             </p>
           </div>
 
@@ -201,7 +201,7 @@ ${materials.applicationEmail.body}
                 <FileText className="w-3.5 h-3.5" />
                 <span>Resume Summary</span>
               </div>
-              <p className="text-[11px] text-slate-400">2-3 sentence top header profile tailored for this role.</p>
+              <p className="text-[11px] text-slate-400">2–3 sentence profile header for this role.</p>
             </div>
 
             <div className="rounded-xl bg-slate-900/90 border border-slate-800 p-3.5 space-y-1">
@@ -209,7 +209,7 @@ ${materials.applicationEmail.body}
                 <FileSignature className="w-3.5 h-3.5" />
                 <span>Cover Letter</span>
               </div>
-              <p className="text-[11px] text-slate-400">Full 3-4 paragraph letter referencing your actual coursework & projects.</p>
+              <p className="text-[11px] text-slate-400">Targeted letter highlighting your projects and skills.</p>
             </div>
 
             <div className="rounded-xl bg-slate-900/90 border border-slate-800 p-3.5 space-y-1">
@@ -217,7 +217,7 @@ ${materials.applicationEmail.body}
                 <Mail className="w-3.5 h-3.5" />
                 <span>Application Email</span>
               </div>
-              <p className="text-[11px] text-slate-400">Direct subject line & outreach note for hiring managers.</p>
+              <p className="text-[11px] text-slate-400">Concise outreach note for hiring teams.</p>
             </div>
           </div>
 
@@ -335,7 +335,7 @@ ${materials.applicationEmail.body}
                       Tailored Resume Summary
                     </h3>
                     <p className="text-[11px] text-slate-400">
-                      Place this 2-3 sentence statement at the top of your student resume.
+                      Add this statement to the top of your resume.
                     </p>
                   </div>
                 </div>
@@ -388,7 +388,7 @@ ${materials.applicationEmail.body}
                       Targeted Cover Letter
                     </h3>
                     <p className="text-[11px] text-slate-400">
-                      Structured formal letter connecting your verified projects and skills to the role.
+                      Connects your projects and skills to the role.
                     </p>
                   </div>
                 </div>
@@ -441,7 +441,7 @@ ${materials.applicationEmail.body}
                       Application Outreach Email
                     </h3>
                     <p className="text-[11px] text-slate-400">
-                      Ready-to-send email when contacting hiring managers or admissions teams directly.
+                      Ready-to-send outreach message for hiring teams.
                     </p>
                   </div>
                 </div>

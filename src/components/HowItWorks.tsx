@@ -14,21 +14,21 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onNavigate }) => {
       title: 'Create Your Career Profile',
       icon: UserCheck,
       description:
-        'Share your education details, technical and soft skills, coursework, and the types of roles or scholarships you are targeting.',
+        'Add your academic major, technical skills, coursework, and target roles.',
     },
     {
       step: '02',
       title: 'AI Matches & Highlights Gaps',
       icon: Sparkles,
       description:
-        'The career agent processes your profile against opportunity requirements to rank relevance and pinpoint specific skills to strengthen.',
+        'AI evaluates your profile against role requirements and pinpoints skill gaps.',
     },
     {
       step: '03',
       title: 'Generate Custom Materials',
       icon: Send,
       description:
-        'Produce tailored resume summaries, custom cover letters, and email outreach drafts tailored specifically to your chosen opportunities.',
+        'Generate tailored resume summaries, cover letters, and outreach emails.',
     },
   ];
 
@@ -43,7 +43,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onNavigate }) => {
             How Career Agent Works
           </h2>
           <p className="text-sm sm:text-base text-slate-400 mt-2">
-            A structured workflow built specifically to help students navigate career discovery with clarity.
+            A clear 3-step workflow for student career discovery.
           </p>
         </div>
 
@@ -86,7 +86,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onNavigate }) => {
             Ready to find your matched opportunities?
           </h3>
           <p className="text-sm text-slate-300 mb-6 max-w-lg mx-auto">
-            Build your student profile to begin discovering internships, jobs, scholarships, and certifications suited for you.
+            Build your profile to discover matched internships, jobs, and scholarships.
           </p>
           <button
             id="how-it-works-cta"

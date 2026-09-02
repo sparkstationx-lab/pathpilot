@@ -137,21 +137,24 @@ export const AICareerDashboard: React.FC<AICareerDashboardProps> = ({
 
       setIsLoadingAnalyses(true);
       try {
-        const promises = needed.map((item) =>
-          analyzeOpportunityFit(profile, item.opportunity).catch(() => null)
-        );
-        const results = await Promise.all(promises);
-        if (isMounted) {
-          const newMap: Record<string, AIMatchAnalysis> = { ...matchData };
-          results.forEach((res) => {
-            if (res) {
-              newMap[res.opportunityId] = res;
+        for (const item of needed) {
+          if (!isMounted) break;
+          try {
+            const res = await analyzeOpportunityFit(profile, item.opportunity);
+            if (isMounted && res) {
+              setMatchData((prev) => ({
+                ...prev,
+                [res.opportunityId]: res,
+              }));
             }
-          });
-          setMatchData(newMap);
+          } catch (e) {
+            console.warn('Dashboard analysis fetch info:', e);
+          }
+          // Small pause between background requests
+          await new Promise((resolve) => setTimeout(resolve, 350));
         }
       } catch (err) {
-        console.error('Error fetching top 3 analyses:', err);
+        console.warn('Error fetching top 3 analyses:', err);
       } finally {
         if (isMounted) {
           setIsLoadingAnalyses(false);
@@ -249,7 +252,7 @@ export const AICareerDashboard: React.FC<AICareerDashboardProps> = ({
             AI Career Dashboard
           </h1>
           <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
-            Real-time personalized match scores, eligibility status, and targeted recommendations evaluated against your student career profile.
+            Personalized match scores, eligibility status, and recommendations evaluated against your profile.
           </p>
         </div>
 
@@ -396,7 +399,7 @@ export const AICareerDashboard: React.FC<AICareerDashboardProps> = ({
               )}
             </div>
             <p className="text-xs text-slate-400 mt-0.5">
-              Ranked by Gemini AI compatibility, required skills overlap, and career trajectory fit
+              Ranked by skill overlap and career goal trajectory
             </p>
           </div>
 
@@ -559,7 +562,7 @@ export const AICareerDashboard: React.FC<AICareerDashboardProps> = ({
             <h2 className="text-base sm:text-lg font-bold text-slate-100">
               Recommended Next Actions
             </h2>
-            <p className="text-xs text-slate-400">Simple, targeted steps to maximize your application success</p>
+            <p className="text-xs text-slate-400">Targeted steps to strengthen your applications</p>
           </div>
         </div>
 
@@ -575,13 +578,13 @@ export const AICareerDashboard: React.FC<AICareerDashboardProps> = ({
               </h3>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Review top identified gaps for your target roles{' '}
+              Strengthen identified gaps{' '}
               {topGaps.length > 0 ? (
                 <strong className="text-emerald-300">({topGaps.join(', ')})</strong>
               ) : (
                 'in advanced frameworks'
               )}{' '}
-              through hands-on code sandboxes or coursework.
+              through hands-on projects or coursework.
             </p>
           </div>
 
@@ -596,7 +599,7 @@ export const AICareerDashboard: React.FC<AICareerDashboardProps> = ({
               </h3>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Ensure your portfolio emphasizes your real-time projects and problem-solving skills tailored to <strong className="text-slate-200">{profile.careerGoal || 'software engineering'}</strong>.
+              Highlight projects and problem-solving skills relevant to <strong className="text-slate-200">{profile.careerGoal || 'software engineering'}</strong>.
             </p>
           </div>
 
@@ -611,7 +614,7 @@ export const AICareerDashboard: React.FC<AICareerDashboardProps> = ({
               </h3>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Top matched role <strong className="text-slate-200">{topThree[0]?.opportunity.title.slice(0, 30)}...</strong> has a deadline on <strong className="text-emerald-300">{topThree[0]?.opportunity.deadline}</strong>.
+              <strong className="text-slate-200">{topThree[0]?.opportunity.title.slice(0, 30)}...</strong> deadline: <strong className="text-emerald-300">{topThree[0]?.opportunity.deadline}</strong>.
             </p>
           </div>
         </div>
@@ -619,7 +622,7 @@ export const AICareerDashboard: React.FC<AICareerDashboardProps> = ({
         {/* Action Footnotes / Exploration Button */}
         <div className="mt-6 pt-5 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-slate-400">
-            Want to see all available roles, scholarships, and certification grants?
+            Browse all available opportunities, scholarships, and certifications.
           </p>
           <button
             onClick={onNavigateToOpportunities}

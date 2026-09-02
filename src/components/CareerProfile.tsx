@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import {
-  ArrowLeft,
   User,
   GraduationCap,
   Sparkles,
@@ -10,11 +10,10 @@ import {
   Plus,
   X,
   CheckCircle2,
-  Save,
-  Clock,
+  ArrowRight,
+  ArrowLeft,
   RotateCcw,
-  Compass,
-  ArrowRight
+  BookOpen
 } from 'lucide-react';
 import { StudentProfile } from '../types';
 
@@ -46,8 +45,8 @@ const SAMPLE_PROFILE: StudentProfile = {
   skills: ['Python', 'Data Structures', 'REST APIs', 'Git', 'JavaScript', 'SQL'],
   interests: ['Software Development', 'Artificial Intelligence', 'Cloud Architecture'],
   careerGoal: 'Software Engineer / Full Stack Developer',
-  projects: ['Real-Time Chat & Collab App (React, Node.js)', 'Algorithms Visualizer (Python)'],
-  certifications: ['AWS Cloud Foundations Certified', 'Meta Front-End Developer Specialization'],
+  projects: ['Real-Time Web Application (React, Node.js)', 'Algorithms Visualizer (Python)'],
+  certifications: ['AWS Cloud Foundations Certified', 'Meta Front-End Specialization'],
 };
 
 const SUGGESTED_SKILLS = [
@@ -71,41 +70,48 @@ const SUGGESTED_INTERESTS = [
   'Data Science',
   'Cloud Architecture',
   'Cybersecurity',
-  'Open Source',
   'Web Development',
-  'Product Design',
+  'Open Source',
+  'Product Engineering',
 ];
 
-export const CareerProfile: React.FC<CareerProfileProps> = ({ 
-  onBack, 
+const SUGGESTED_CAREER_GOALS = [
+  'Software Engineer / Full Stack Developer',
+  'AI / Machine Learning Engineer',
+  'Frontend Developer',
+  'Backend Engineer',
+  'Data Analyst / Scientist',
+  'Cloud & DevOps Engineer',
+  'Cybersecurity Analyst',
+];
+
+const TOTAL_STEPS = 5;
+
+export const CareerProfile: React.FC<CareerProfileProps> = ({
+  onBack,
   onExploreOpportunities,
   onViewDashboard,
 }) => {
+  const [currentStep, setCurrentStep] = useState<number>(1);
   const [profile, setProfile] = useState<StudentProfile>(INITIAL_PROFILE);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // Input states for chips / lists
   const [newSkill, setNewSkill] = useState('');
   const [newInterest, setNewInterest] = useState('');
   const [newProject, setNewProject] = useState('');
   const [newCertification, setNewCertification] = useState('');
-  const [isSaved, setIsSaved] = useState(false);
-  const [hasExistingProfile, setHasExistingProfile] = useState(false);
-  const [savedAt, setSavedAt] = useState<string | null>(null);
 
-  // Load profile from localStorage on component mount
+  // Load existing profile if available on mount
   useEffect(() => {
     try {
       const savedData = localStorage.getItem(STORAGE_KEY);
       if (savedData) {
         const parsed = JSON.parse(savedData);
         setProfile(parsed);
-        setHasExistingProfile(true);
-      } else {
-        // Pre-fill sample profile for immediate testing if completely blank
-        setProfile(SAMPLE_PROFILE);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(SAMPLE_PROFILE));
-        setHasExistingProfile(true);
       }
     } catch (e) {
-      console.error('Error loading profile from localStorage:', e);
+      console.error('Error reading profile from localStorage:', e);
     }
   }, []);
 
@@ -118,6 +124,7 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({
         skills: [...prev.skills, val],
       }));
       if (!skillToAdd) setNewSkill('');
+      setErrorMsg(null);
     }
   };
 
@@ -137,6 +144,7 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({
         interests: [...prev.interests, val],
       }));
       if (!interestToAdd) setNewInterest('');
+      setErrorMsg(null);
     }
   };
 
@@ -156,6 +164,7 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({
         projects: [...prev.projects, val],
       }));
       setNewProject('');
+      setErrorMsg(null);
     }
   };
 
@@ -175,6 +184,7 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({
         certifications: [...prev.certifications, val],
       }));
       setNewCertification('');
+      setErrorMsg(null);
     }
   };
 
@@ -185,596 +195,710 @@ export const CareerProfile: React.FC<CareerProfileProps> = ({
     }));
   };
 
-  // Form Submission
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  // Validate step before advancing
+  const validateCurrentStep = (step: number): boolean => {
+    setErrorMsg(null);
+    if (step === 1) {
+      if (!profile.fullName.trim()) {
+        setErrorMsg('Please enter your full name to proceed.');
+        return false;
+      }
+    } else if (step === 2) {
+      if (!profile.branchField.trim()) {
+        setErrorMsg('Please specify your branch or field of study.');
+        return false;
+      }
+    } else if (step === 4) {
+      if (!profile.careerGoal.trim()) {
+        setErrorMsg('Please enter your primary career goal or target role.');
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const handleNext = () => {
+    if (!validateCurrentStep(currentStep)) return;
+
+    if (currentStep < TOTAL_STEPS) {
+      setCurrentStep((prev) => prev + 1);
+    } else {
+      handleFinalSave();
+    }
+  };
+
+  const handleBack = () => {
+    setErrorMsg(null);
+    if (currentStep > 1) {
+      setCurrentStep((prev) => prev - 1);
+    } else {
+      onBack();
+    }
+  };
+
+  const handleFinalSave = () => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
-      setIsSaved(true);
-      setHasExistingProfile(true);
-      setSavedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (onViewDashboard) {
+        onViewDashboard();
+      } else if (onExploreOpportunities) {
+        onExploreOpportunities();
+      } else {
+        onBack();
+      }
     } catch (e) {
       console.error('Error saving profile to localStorage:', e);
     }
   };
 
-  // Load Sample Profile
   const handleLoadSample = () => {
     setProfile(SAMPLE_PROFILE);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(SAMPLE_PROFILE));
-    setIsSaved(true);
-    setHasExistingProfile(true);
+    setErrorMsg(null);
   };
 
-  // Reset / Clear
   const handleReset = () => {
-    if (window.confirm('Reset all fields to blank?')) {
-      setProfile(INITIAL_PROFILE);
-      localStorage.removeItem(STORAGE_KEY);
-      setHasExistingProfile(false);
-      setIsSaved(false);
-      setSavedAt(null);
-    }
+    setProfile(INITIAL_PROFILE);
+    setErrorMsg(null);
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-      {/* Top Bar with Navigation & Status */}
-      <div className="flex items-center justify-between gap-4 mb-6">
-        <button
-          id="profile-back-btn"
-          onClick={onBack}
-          className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-400 hover:text-slate-200 transition-colors group cursor-pointer"
-        >
-          <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-          <span>Back to Overview</span>
-        </button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
+      {/* Modal Container */}
+      <div className="relative w-full max-w-xl my-auto bg-slate-900 border border-slate-800/90 rounded-2xl shadow-2xl shadow-black/80 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        {/* Subtle Top Accent Glow */}
+        <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-400" />
 
-        <div className="flex items-center gap-2">
-          {onViewDashboard && (
+        {/* Modal Top Header with Step Counter & Close */}
+        <div className="px-6 pt-5 pb-4 border-b border-slate-800/80 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2.5">
+            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-950/80 border border-emerald-800/50 text-emerald-400">
+              Step {currentStep} of {TOTAL_STEPS}
+            </span>
+            <span className="text-xs text-slate-400 hidden sm:inline">
+              Career Profile Setup
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
             <button
-              id="profile-view-dashboard-top-btn"
-              onClick={onViewDashboard}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-400 hover:text-emerald-300 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 transition-all cursor-pointer"
+              type="button"
+              onClick={handleLoadSample}
+              className="text-[11px] font-medium text-slate-400 hover:text-emerald-300 bg-slate-950 border border-slate-800 hover:border-slate-700 px-2.5 py-1 rounded-md transition-colors cursor-pointer"
             >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>AI Dashboard</span>
+              Fill Sample
             </button>
-          )}
-
-          {onExploreOpportunities && (
             <button
-              onClick={onExploreOpportunities}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-slate-100 bg-slate-900 hover:bg-slate-800 border border-slate-800 transition-all cursor-pointer"
+              type="button"
+              onClick={onBack}
+              className="text-slate-400 hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-800/60 transition-colors cursor-pointer"
+              aria-label="Close"
             >
-              <Compass className="w-3.5 h-3.5" />
-              <span>Opportunities</span>
+              <X className="w-4 h-4" />
             </button>
-          )}
-
-          {hasExistingProfile && (
-            <div className="hidden sm:flex items-center gap-2 text-xs text-emerald-400/90 bg-emerald-950/40 border border-emerald-800/40 px-3 py-1 rounded-full">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Saved locally</span>
-              {savedAt && <span className="text-slate-400">• {savedAt}</span>}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Header */}
-      <div className="mb-8 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-        <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-800/40 text-emerald-400 text-xs font-medium mb-3">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Student Career Profile</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-100 tracking-tight">
-            Create Your Career Profile
-          </h1>
-          <p className="text-sm sm:text-base text-slate-400 mt-1.5 max-w-2xl leading-relaxed">
-            Provide your academic background, skills, interests, and career goals so Gemini AI can accurately discover, analyze, and rank matching opportunities for you.
-          </p>
         </div>
 
-        <button
-          type="button"
-          onClick={handleLoadSample}
-          className="text-xs text-slate-400 hover:text-emerald-400 bg-slate-900 border border-slate-800 hover:border-slate-700 px-3 py-1.5 rounded-lg transition-colors self-start shrink-0"
-        >
-          Load Student Sample
-        </button>
-      </div>
+        {/* Subtle Progress Bar */}
+        <div className="w-full bg-slate-950 h-1">
+          <div
+            className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-300 ease-out"
+            style={{ width: `${(currentStep / TOTAL_STEPS) * 100}%` }}
+          />
+        </div>
 
-      {/* Success Banner */}
-      {isSaved && (
-        <div className="mb-6 p-5 rounded-xl bg-emerald-950/60 border border-emerald-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-emerald-200 text-sm animate-in fade-in duration-300">
-          <div className="flex items-center gap-3">
-            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-            <div>
-              <p className="font-semibold text-emerald-300">Career Profile Successfully Saved!</p>
-              <p className="text-xs text-emerald-400/80">Your profile is safely stored locally and ready for Gemini AI opportunity matching.</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2.5 self-start sm:self-auto shrink-0">
-            {onViewDashboard && (
-              <button
-                id="saved-view-dashboard-btn"
-                onClick={onViewDashboard}
-                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs transition-colors shrink-0 shadow-sm cursor-pointer"
+        {/* Step Body Content */}
+        <div className="p-6 sm:p-7 flex-1 min-h-[340px] flex flex-col justify-between">
+          <AnimatePresence mode="wait">
+            {/* STEP 1: Basic Information */}
+            {currentStep === 1 && (
+              <motion.div
+                key="step-1"
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-4"
               >
-                <span>Go to AI Dashboard</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            )}
-            {onExploreOpportunities && (
-              <button
-                onClick={onExploreOpportunities}
-                className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 font-semibold text-xs border border-slate-700 transition-colors shrink-0 cursor-pointer"
-              >
-                <span>Opportunities</span>
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Profile Form */}
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* SECTION 1: Basic Information */}
-        <div className="rounded-2xl bg-slate-900/70 border border-slate-800 p-6 sm:p-7">
-          <div className="flex items-center gap-2.5 mb-5 pb-3 border-b border-slate-800">
-            <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-              <User className="w-4 h-4" />
-            </div>
-            <div>
-              <h2 className="text-base font-semibold text-slate-100">
-                1. Basic Information
-              </h2>
-              <p className="text-xs text-slate-400">Your name and primary identity</p>
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="fullName" className="block text-xs font-medium text-slate-300 mb-1.5">
-              Full Name <span className="text-emerald-400">*</span>
-            </label>
-            <input
-              id="fullName"
-              type="text"
-              required
-              value={profile.fullName}
-              onChange={(e) => setProfile({ ...profile, fullName: e.target.value })}
-              placeholder="e.g. Alex Rivera"
-              className="w-full px-3.5 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/60 transition-colors"
-            />
-          </div>
-        </div>
-
-        {/* SECTION 2: Education */}
-        <div className="rounded-2xl bg-slate-900/70 border border-slate-800 p-6 sm:p-7">
-          <div className="flex items-center gap-2.5 mb-5 pb-3 border-b border-slate-800">
-            <div className="w-7 h-7 rounded-lg bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400">
-              <GraduationCap className="w-4 h-4" />
-            </div>
-            <div>
-              <h2 className="text-base font-semibold text-slate-100">
-                2. Education
-              </h2>
-              <p className="text-xs text-slate-400">Your current academic status and major</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div>
-              <label htmlFor="educationDegree" className="block text-xs font-medium text-slate-300 mb-1.5">
-                Education / Degree <span className="text-emerald-400">*</span>
-              </label>
-              <select
-                id="educationDegree"
-                value={profile.educationDegree}
-                onChange={(e) => setProfile({ ...profile, educationDegree: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-emerald-500/60 transition-colors"
-              >
-                <option value="Bachelor of Technology (B.Tech)">Bachelor of Technology (B.Tech)</option>
-                <option value="Bachelor of Science (B.S. / B.Sc)">Bachelor of Science (B.S. / B.Sc)</option>
-                <option value="Bachelor of Engineering (B.E.)">Bachelor of Engineering (B.E.)</option>
-                <option value="Bachelor of Computer Applications (BCA)">Bachelor of Computer Applications (BCA)</option>
-                <option value="Master of Science (M.S. / M.Sc)">Master of Science (M.S. / M.Sc)</option>
-                <option value="Master of Technology (M.Tech)">Master of Technology (M.Tech)</option>
-                <option value="Master of Computer Applications (MCA)">Master of Computer Applications (MCA)</option>
-                <option value="Diploma / Associate Degree">Diploma / Associate Degree</option>
-                <option value="Other Degree / Self-Taught">Other Degree / Self-Taught</option>
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="branchField" className="block text-xs font-medium text-slate-300 mb-1.5">
-                Branch / Field <span className="text-emerald-400">*</span>
-              </label>
-              <input
-                id="branchField"
-                type="text"
-                required
-                value={profile.branchField}
-                onChange={(e) => setProfile({ ...profile, branchField: e.target.value })}
-                placeholder="e.g. Computer Science, Electrical Engineering"
-                className="w-full px-3.5 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/60 transition-colors"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="currentYear" className="block text-xs font-medium text-slate-300 mb-1.5">
-                Current Year <span className="text-emerald-400">*</span>
-              </label>
-              <select
-                id="currentYear"
-                value={profile.currentYear}
-                onChange={(e) => setProfile({ ...profile, currentYear: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-emerald-500/60 transition-colors"
-              >
-                <option value="1st Year">1st Year (Freshman)</option>
-                <option value="2nd Year">2nd Year (Sophomore)</option>
-                <option value="3rd Year">3rd Year (Junior)</option>
-                <option value="4th Year / Final Year">4th Year (Senior / Final Year)</option>
-                <option value="Recent Graduate">Recent Graduate</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* SECTION 3: Skills & Interests */}
-        <div className="rounded-2xl bg-slate-900/70 border border-slate-800 p-6 sm:p-7">
-          <div className="flex items-center gap-2.5 mb-5 pb-3 border-b border-slate-800">
-            <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-              <Sparkles className="w-4 h-4" />
-            </div>
-            <div>
-              <h2 className="text-base font-semibold text-slate-100">
-                3. Skills & Interests
-              </h2>
-              <p className="text-xs text-slate-400">Your capabilities and career passions</p>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            {/* Skills */}
-            <div>
-              <label htmlFor="skillInput" className="block text-xs font-medium text-slate-300 mb-1.5">
-                Skills (Languages, Frameworks, Tools)
-              </label>
-              <div className="flex gap-2 mb-2">
-                <input
-                  id="skillInput"
-                  type="text"
-                  value={newSkill}
-                  onChange={(e) => setNewSkill(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      addSkill();
-                    }
-                  }}
-                  placeholder="Type a skill and press Enter (e.g. Python, React, SQL)"
-                  className="flex-1 px-3.5 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/60 transition-colors"
-                />
-                <button
-                  type="button"
-                  id="add-skill-btn"
-                  onClick={() => addSkill()}
-                  className="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center gap-1 transition-colors cursor-pointer"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add</span>
-                </button>
-              </div>
-
-              {/* Quick suggestions */}
-              <div className="mb-3 flex flex-wrap items-center gap-1.5">
-                <span className="text-[11px] text-slate-500 mr-1">Suggestions:</span>
-                {SUGGESTED_SKILLS.filter((s) => !profile.skills.includes(s)).slice(0, 6).map((suggested) => (
-                  <button
-                    key={suggested}
-                    type="button"
-                    onClick={() => addSkill(suggested)}
-                    className="text-[11px] px-2 py-0.5 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-400 hover:text-emerald-300 border border-slate-700/50 transition-colors cursor-pointer"
-                  >
-                    + {suggested}
-                  </button>
-                ))}
-              </div>
-
-              {/* Selected Skills Chips */}
-              <div className="flex flex-wrap gap-2 min-h-[32px] p-2.5 rounded-lg bg-slate-950/60 border border-slate-800/80">
-                {profile.skills.length === 0 ? (
-                  <span className="text-xs text-slate-600 italic">No skills added yet. Type above or click suggestions.</span>
-                ) : (
-                  profile.skills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium bg-slate-800 text-slate-200 border border-slate-700/80"
-                    >
-                      <span>{skill}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeSkill(skill)}
-                        className="text-slate-400 hover:text-rose-400 transition-colors"
-                        aria-label={`Remove ${skill}`}
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </span>
-                  ))
-                )}
-              </div>
-            </div>
-
-            {/* Interests */}
-            <div>
-              <label htmlFor="interestInput" className="block text-xs font-medium text-slate-300 mb-1.5">
-                Interests (Domains & Focus Areas)
-              </label>
-              <div className="flex gap-2 mb-2">
-                <input
-                  id="interestInput"
-                  type="text"
-                  value={newInterest}
-                  onChange={(e) => setNewInterest(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      addInterest();
-                    }
-                  }}
-                  placeholder="Type an interest and press Enter (e.g. Artificial Intelligence, Cloud)"
-                  className="flex-1 px-3.5 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/60 transition-colors"
-                />
-                <button
-                  type="button"
-                  id="add-interest-btn"
-                  onClick={() => addInterest()}
-                  className="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center gap-1 transition-colors cursor-pointer"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add</span>
-                </button>
-              </div>
-
-              {/* Quick suggestions */}
-              <div className="mb-3 flex flex-wrap items-center gap-1.5">
-                <span className="text-[11px] text-slate-500 mr-1">Suggestions:</span>
-                {SUGGESTED_INTERESTS.filter((i) => !profile.interests.includes(i)).slice(0, 5).map((suggested) => (
-                  <button
-                    key={suggested}
-                    type="button"
-                    onClick={() => addInterest(suggested)}
-                    className="text-[11px] px-2 py-0.5 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-400 hover:text-teal-300 border border-slate-700/50 transition-colors cursor-pointer"
-                  >
-                    + {suggested}
-                  </button>
-                ))}
-              </div>
-
-              {/* Selected Interests Chips */}
-              <div className="flex flex-wrap gap-2 min-h-[32px] p-2.5 rounded-lg bg-slate-950/60 border border-slate-800/80">
-                {profile.interests.length === 0 ? (
-                  <span className="text-xs text-slate-600 italic">No interests added yet. Type above or click suggestions.</span>
-                ) : (
-                  profile.interests.map((interest) => (
-                    <span
-                      key={interest}
-                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium bg-teal-950/50 text-teal-200 border border-teal-800/50"
-                    >
-                      <span>{interest}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeInterest(interest)}
-                        className="text-teal-400/70 hover:text-rose-400 transition-colors"
-                        aria-label={`Remove ${interest}`}
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </span>
-                  ))
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* SECTION 4: Career Goals */}
-        <div className="rounded-2xl bg-slate-900/70 border border-slate-800 p-6 sm:p-7">
-          <div className="flex items-center gap-2.5 mb-5 pb-3 border-b border-slate-800">
-            <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-              <Target className="w-4 h-4" />
-            </div>
-            <div>
-              <h2 className="text-base font-semibold text-slate-100">
-                4. Career Goals
-              </h2>
-              <p className="text-xs text-slate-400">Target roles and aspirations</p>
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="careerGoal" className="block text-xs font-medium text-slate-300 mb-1.5">
-              Primary Career Goal / Target Role <span className="text-emerald-400">*</span>
-            </label>
-            <input
-              id="careerGoal"
-              type="text"
-              required
-              value={profile.careerGoal}
-              onChange={(e) => setProfile({ ...profile, careerGoal: e.target.value })}
-              placeholder="e.g. Software Engineering Intern, Machine Learning Researcher, Junior Data Analyst"
-              className="w-full px-3.5 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/60 transition-colors"
-            />
-          </div>
-        </div>
-
-        {/* SECTION 5: Projects & Certifications */}
-        <div className="rounded-2xl bg-slate-900/70 border border-slate-800 p-6 sm:p-7">
-          <div className="flex items-center gap-2.5 mb-5 pb-3 border-b border-slate-800">
-            <div className="w-7 h-7 rounded-lg bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400">
-              <FolderGit2 className="w-4 h-4" />
-            </div>
-            <div>
-              <h2 className="text-base font-semibold text-slate-100">
-                5. Projects & Certifications
-              </h2>
-              <p className="text-xs text-slate-400">Practical experience and completed credentials</p>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            {/* Projects */}
-            <div>
-              <label htmlFor="projectInput" className="block text-xs font-medium text-slate-300 mb-1.5">
-                Key Projects (Title & Short Description)
-              </label>
-              <div className="flex gap-2 mb-3">
-                <input
-                  id="projectInput"
-                  type="text"
-                  value={newProject}
-                  onChange={(e) => setNewProject(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      addProject();
-                    }
-                  }}
-                  placeholder="e.g. E-Commerce Platform built with React & Node.js"
-                  className="flex-1 px-3.5 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/60 transition-colors"
-                />
-                <button
-                  type="button"
-                  id="add-project-btn"
-                  onClick={addProject}
-                  className="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center gap-1 transition-colors cursor-pointer"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add</span>
-                </button>
-              </div>
-
-              {/* Projects List */}
-              <div className="space-y-2">
-                {profile.projects.length === 0 ? (
-                  <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80 text-xs text-slate-600 italic">
-                    No projects added yet. Add relevant class projects, hackathon projects, or personal builds.
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+                    <User className="w-4 h-4" />
                   </div>
-                ) : (
-                  profile.projects.map((proj, idx) => (
-                    <div
-                      key={idx}
-                      className="p-3 rounded-lg bg-slate-950 border border-slate-800/90 flex items-center justify-between gap-3 text-xs text-slate-200"
+                  <div>
+                    <h2 className="text-lg font-bold text-slate-100">
+                      Basic Information
+                    </h2>
+                    <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
+                      Enter your full name to personalize your opportunity match analysis and application drafts.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <label htmlFor="fullName" className="block text-xs font-medium text-slate-300 mb-1.5">
+                    Full Name <span className="text-emerald-400">*</span>
+                  </label>
+                  <input
+                    id="fullName"
+                    type="text"
+                    autoFocus
+                    required
+                    value={profile.fullName}
+                    onChange={(e) => {
+                      setProfile({ ...profile, fullName: e.target.value });
+                      if (errorMsg) setErrorMsg(null);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleNext();
+                      }
+                    }}
+                    placeholder="e.g. Alex Rivera"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/30 transition-all"
+                  />
+                </div>
+              </motion.div>
+            )}
+
+            {/* STEP 2: Education */}
+            {currentStep === 2 && (
+              <motion.div
+                key="step-2"
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-4"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400 shrink-0 mt-0.5">
+                    <GraduationCap className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-slate-100">
+                      Education
+                    </h2>
+                    <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
+                      Select your degree, academic discipline, and current year to evaluate eligibility criteria.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-3.5 pt-1">
+                  <div>
+                    <label htmlFor="educationDegree" className="block text-xs font-medium text-slate-300 mb-1.5">
+                      Degree / Education <span className="text-emerald-400">*</span>
+                    </label>
+                    <select
+                      id="educationDegree"
+                      value={profile.educationDegree}
+                      onChange={(e) => setProfile({ ...profile, educationDegree: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-emerald-500/60 transition-colors"
                     >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
-                        <span className="truncate">{proj}</span>
-                      </div>
+                      <option value="Bachelor of Technology (B.Tech)">Bachelor of Technology (B.Tech)</option>
+                      <option value="Bachelor of Science (B.S. / B.Sc)">Bachelor of Science (B.S. / B.Sc)</option>
+                      <option value="Bachelor of Engineering (B.E.)">Bachelor of Engineering (B.E.)</option>
+                      <option value="Bachelor of Computer Applications (BCA)">Bachelor of Computer Applications (BCA)</option>
+                      <option value="Master of Science (M.S. / M.Sc)">Master of Science (M.S. / M.Sc)</option>
+                      <option value="Master of Technology (M.Tech)">Master of Technology (M.Tech)</option>
+                      <option value="Master of Computer Applications (MCA)">Master of Computer Applications (MCA)</option>
+                      <option value="Diploma / Associate Degree">Diploma / Associate Degree</option>
+                      <option value="Other Degree / Self-Taught">Other Degree / Self-Taught</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label htmlFor="branchField" className="block text-xs font-medium text-slate-300 mb-1.5">
+                      Branch / Field <span className="text-emerald-400">*</span>
+                    </label>
+                    <input
+                      id="branchField"
+                      type="text"
+                      required
+                      value={profile.branchField}
+                      onChange={(e) => {
+                        setProfile({ ...profile, branchField: e.target.value });
+                        if (errorMsg) setErrorMsg(null);
+                      }}
+                      placeholder="e.g. Computer Science & Engineering, Information Technology"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/60 transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="currentYear" className="block text-xs font-medium text-slate-300 mb-1.5">
+                      Current Year <span className="text-emerald-400">*</span>
+                    </label>
+                    <select
+                      id="currentYear"
+                      value={profile.currentYear}
+                      onChange={(e) => setProfile({ ...profile, currentYear: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-emerald-500/60 transition-colors"
+                    >
+                      <option value="1st Year">1st Year (Freshman)</option>
+                      <option value="2nd Year">2nd Year (Sophomore)</option>
+                      <option value="3rd Year">3rd Year (Junior)</option>
+                      <option value="4th Year / Final Year">4th Year (Senior / Final Year)</option>
+                      <option value="Recent Graduate">Recent Graduate</option>
+                    </select>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* STEP 3: Skills & Interests */}
+            {currentStep === 3 && (
+              <motion.div
+                key="step-3"
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-4"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-slate-100">
+                      Skills & Interests
+                    </h2>
+                    <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
+                      Add the technical competencies and domain interests that define your expertise.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-4 pt-1">
+                  {/* Skills input */}
+                  <div>
+                    <label htmlFor="skillInput" className="block text-xs font-medium text-slate-300 mb-1.5">
+                      Skills
+                    </label>
+                    <div className="flex gap-2 mb-2">
+                      <input
+                        id="skillInput"
+                        type="text"
+                        value={newSkill}
+                        onChange={(e) => setNewSkill(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            addSkill();
+                          }
+                        }}
+                        placeholder="Type skill & press Enter (e.g. Python, React)"
+                        className="flex-1 px-3.5 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs sm:text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/60 transition-colors"
+                      />
                       <button
                         type="button"
-                        onClick={() => removeProject(proj)}
-                        className="text-slate-400 hover:text-rose-400 p-1 transition-colors flex-shrink-0"
-                        aria-label="Remove project"
+                        id="add-skill-btn"
+                        onClick={() => addSkill()}
+                        className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center gap-1 transition-colors cursor-pointer shrink-0"
                       >
-                        <X className="w-3.5 h-3.5" />
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add</span>
                       </button>
                     </div>
-                  ))
-                )}
-              </div>
-            </div>
 
-            {/* Certifications */}
-            <div className="pt-4 border-t border-slate-800/80">
-              <label htmlFor="certInput" className="block text-xs font-medium text-slate-300 mb-1.5">
-                Certifications & Courses
-              </label>
-              <div className="flex gap-2 mb-3">
-                <input
-                  id="certInput"
-                  type="text"
-                  value={newCertification}
-                  onChange={(e) => setNewCertification(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      addCertification();
-                    }
-                  }}
-                  placeholder="e.g. AWS Certified Cloud Practitioner, Meta Front-End Certificate"
-                  className="flex-1 px-3.5 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/60 transition-colors"
-                />
-                <button
-                  type="button"
-                  id="add-cert-btn"
-                  onClick={addCertification}
-                  className="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center gap-1 transition-colors cursor-pointer"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add</span>
-                </button>
-              </div>
+                    {/* Skill chips */}
+                    <div className="flex flex-wrap gap-1.5 min-h-[30px] p-2 rounded-lg bg-slate-950/70 border border-slate-800/80 mb-2">
+                      {profile.skills.length === 0 ? (
+                        <span className="text-xs text-slate-600 italic">No skills added yet.</span>
+                      ) : (
+                        profile.skills.map((skill) => (
+                          <span
+                            key={skill}
+                            className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-medium bg-slate-800 text-slate-200 border border-slate-700/70"
+                          >
+                            <span>{skill}</span>
+                            <button
+                              type="button"
+                              onClick={() => removeSkill(skill)}
+                              className="text-slate-400 hover:text-rose-400 transition-colors"
+                              aria-label={`Remove ${skill}`}
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </span>
+                        ))
+                      )}
+                    </div>
 
-              {/* Certifications List */}
-              <div className="space-y-2">
-                {profile.certifications.length === 0 ? (
-                  <div className="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80 text-xs text-slate-600 italic">
-                    No certifications added yet. Add relevant online certificates or credentials.
+                    {/* Suggested skills */}
+                    <div className="flex flex-wrap items-center gap-1">
+                      <span className="text-[10px] text-slate-500 mr-1">Suggestions:</span>
+                      {SUGGESTED_SKILLS.filter((s) => !profile.skills.includes(s)).slice(0, 5).map((suggested) => (
+                        <button
+                          key={suggested}
+                          type="button"
+                          onClick={() => addSkill(suggested)}
+                          className="text-[10px] px-2 py-0.5 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-400 hover:text-emerald-300 border border-slate-700/40 transition-colors cursor-pointer"
+                        >
+                          + {suggested}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                ) : (
-                  profile.certifications.map((cert, idx) => (
-                    <div
-                      key={idx}
-                      className="p-3 rounded-lg bg-slate-950 border border-slate-800/90 flex items-center justify-between gap-3 text-xs text-slate-200"
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <Award className="w-3.5 h-3.5 text-teal-400 flex-shrink-0" />
-                        <span className="truncate">{cert}</span>
-                      </div>
+
+                  {/* Interests input */}
+                  <div>
+                    <label htmlFor="interestInput" className="block text-xs font-medium text-slate-300 mb-1.5">
+                      Interests
+                    </label>
+                    <div className="flex gap-2 mb-2">
+                      <input
+                        id="interestInput"
+                        type="text"
+                        value={newInterest}
+                        onChange={(e) => setNewInterest(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            addInterest();
+                          }
+                        }}
+                        placeholder="Type interest & press Enter (e.g. AI, Cloud)"
+                        className="flex-1 px-3.5 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs sm:text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/60 transition-colors"
+                      />
                       <button
                         type="button"
-                        onClick={() => removeCertification(cert)}
-                        className="text-slate-400 hover:text-rose-400 p-1 transition-colors flex-shrink-0"
-                        aria-label="Remove certification"
+                        id="add-interest-btn"
+                        onClick={() => addInterest()}
+                        className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center gap-1 transition-colors cursor-pointer shrink-0"
                       >
-                        <X className="w-3.5 h-3.5" />
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add</span>
                       </button>
                     </div>
-                  ))
-                )}
-              </div>
+
+                    {/* Interest chips */}
+                    <div className="flex flex-wrap gap-1.5 min-h-[30px] p-2 rounded-lg bg-slate-950/70 border border-slate-800/80">
+                      {profile.interests.length === 0 ? (
+                        <span className="text-xs text-slate-600 italic">No interests added yet.</span>
+                      ) : (
+                        profile.interests.map((interest) => (
+                          <span
+                            key={interest}
+                            className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-medium bg-teal-950/50 text-teal-200 border border-teal-800/50"
+                          >
+                            <span>{interest}</span>
+                            <button
+                              type="button"
+                              onClick={() => removeInterest(interest)}
+                              className="text-teal-400/70 hover:text-rose-400 transition-colors"
+                              aria-label={`Remove ${interest}`}
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </span>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* STEP 4: Career Goals */}
+            {currentStep === 4 && (
+              <motion.div
+                key="step-4"
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-4"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+                    <Target className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-slate-100">
+                      Career Goals
+                    </h2>
+                    <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
+                      Define your target role or the career trajectory you want to focus on.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-1 space-y-3">
+                  <div>
+                    <label htmlFor="careerGoal" className="block text-xs font-medium text-slate-300 mb-1.5">
+                      Primary Career Goal <span className="text-emerald-400">*</span>
+                    </label>
+                    <input
+                      id="careerGoal"
+                      type="text"
+                      autoFocus
+                      required
+                      value={profile.careerGoal}
+                      onChange={(e) => {
+                        setProfile({ ...profile, careerGoal: e.target.value });
+                        if (errorMsg) setErrorMsg(null);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleNext();
+                        }
+                      }}
+                      placeholder="e.g. Software Engineer / Full Stack Developer"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/60 transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <span className="text-[11px] text-slate-500 block mb-2">Quick role presets:</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {SUGGESTED_CAREER_GOALS.map((goal) => (
+                        <button
+                          key={goal}
+                          type="button"
+                          onClick={() => {
+                            setProfile({ ...profile, careerGoal: goal });
+                            if (errorMsg) setErrorMsg(null);
+                          }}
+                          className={`text-xs px-2.5 py-1 rounded-lg border transition-all cursor-pointer ${
+                            profile.careerGoal === goal
+                              ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300 font-medium'
+                              : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
+                          }`}
+                        >
+                          {goal}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* STEP 5: Projects & Certifications */}
+            {currentStep === 5 && (
+              <motion.div
+                key="step-5"
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-4"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400 shrink-0 mt-0.5">
+                    <FolderGit2 className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-slate-100">
+                      Projects & Certifications
+                    </h2>
+                    <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
+                      Highlight practical projects and earned credentials to strengthen match accuracy.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-4 pt-1">
+                  {/* Projects */}
+                  <div>
+                    <label htmlFor="projectInput" className="block text-xs font-medium text-slate-300 mb-1.5">
+                      Projects
+                    </label>
+                    <div className="flex gap-2 mb-2">
+                      <input
+                        id="projectInput"
+                        type="text"
+                        value={newProject}
+                        onChange={(e) => setNewProject(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            addProject();
+                          }
+                        }}
+                        placeholder="e.g. Web Application (React, Node.js)"
+                        className="flex-1 px-3.5 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs sm:text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/60 transition-colors"
+                      />
+                      <button
+                        type="button"
+                        id="add-project-btn"
+                        onClick={addProject}
+                        className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center gap-1 transition-colors cursor-pointer shrink-0"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add</span>
+                      </button>
+                    </div>
+
+                    <div className="space-y-1.5 max-h-[85px] overflow-y-auto pr-1">
+                      {profile.projects.length === 0 ? (
+                        <div className="p-2 rounded-lg bg-slate-950/60 border border-slate-800/80 text-[11px] text-slate-600 italic">
+                          No projects added yet.
+                        </div>
+                      ) : (
+                        profile.projects.map((proj, idx) => (
+                          <div
+                            key={idx}
+                            className="p-2 rounded-lg bg-slate-950 border border-slate-800/90 flex items-center justify-between gap-2 text-xs text-slate-200"
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                              <span className="truncate">{proj}</span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeProject(proj)}
+                              className="text-slate-400 hover:text-rose-400 transition-colors shrink-0 p-0.5"
+                              aria-label="Remove project"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Certifications */}
+                  <div>
+                    <label htmlFor="certInput" className="block text-xs font-medium text-slate-300 mb-1.5">
+                      Certifications
+                    </label>
+                    <div className="flex gap-2 mb-2">
+                      <input
+                        id="certInput"
+                        type="text"
+                        value={newCertification}
+                        onChange={(e) => setNewCertification(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            addCertification();
+                          }
+                        }}
+                        placeholder="e.g. AWS Cloud Certified"
+                        className="flex-1 px-3.5 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs sm:text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/60 transition-colors"
+                      />
+                      <button
+                        type="button"
+                        id="add-cert-btn"
+                        onClick={addCertification}
+                        className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center gap-1 transition-colors cursor-pointer shrink-0"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add</span>
+                      </button>
+                    </div>
+
+                    <div className="space-y-1.5 max-h-[85px] overflow-y-auto pr-1">
+                      {profile.certifications.length === 0 ? (
+                        <div className="p-2 rounded-lg bg-slate-950/60 border border-slate-800/80 text-[11px] text-slate-600 italic">
+                          No certifications added yet.
+                        </div>
+                      ) : (
+                        profile.certifications.map((cert, idx) => (
+                          <div
+                            key={idx}
+                            className="p-2 rounded-lg bg-slate-950 border border-slate-800/90 flex items-center justify-between gap-2 text-xs text-slate-200"
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <Award className="w-3.5 h-3.5 text-teal-400 shrink-0" />
+                              <span className="truncate">{cert}</span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeCertification(cert)}
+                              className="text-slate-400 hover:text-rose-400 transition-colors shrink-0 p-0.5"
+                              aria-label="Remove certification"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Validation Error Message */}
+          {errorMsg && (
+            <div className="mt-3 p-2.5 rounded-lg bg-rose-950/50 border border-rose-800/60 text-rose-300 text-xs flex items-center gap-2 animate-in fade-in duration-200">
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" />
+              <span>{errorMsg}</span>
             </div>
-          </div>
+          )}
         </div>
 
-        {/* Action Controls */}
-        <div className="pt-3 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-800/80">
+        {/* Modal Bottom Action Controls */}
+        <div className="px-6 py-4 bg-slate-950/60 border-t border-slate-800/80 flex items-center justify-between gap-3">
+          {/* Back Button */}
           <button
             type="button"
-            onClick={handleReset}
-            className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-rose-400 transition-colors cursor-pointer"
+            id="wizard-back-btn"
+            onClick={handleBack}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-colors cursor-pointer"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Reset Form</span>
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>{currentStep === 1 ? 'Cancel' : 'Back'}</span>
           </button>
 
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <button
-              id="create-profile-btn"
-              type="submit"
-              className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition-all duration-200 shadow-lg shadow-emerald-500/20 active:scale-98 text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <Save className="w-4 h-4" />
-              <span>Save Career Profile</span>
-            </button>
+          {/* Subtle Step Dots Indicator */}
+          <div className="flex items-center gap-1.5">
+            {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => {
+                  // Only allow jumping back to previously completed steps or next step if valid
+                  if (i + 1 < currentStep) {
+                    setErrorMsg(null);
+                    setCurrentStep(i + 1);
+                  } else if (i + 1 === currentStep + 1 && validateCurrentStep(currentStep)) {
+                    setCurrentStep(i + 1);
+                  }
+                }}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  i + 1 === currentStep
+                    ? 'w-6 bg-emerald-400'
+                    : i + 1 < currentStep
+                    ? 'w-2 bg-emerald-500/50 hover:bg-emerald-400'
+                    : 'w-2 bg-slate-800'
+                }`}
+                aria-label={`Go to step ${i + 1}`}
+              />
+            ))}
           </div>
+
+          {/* Next / Submit Button */}
+          {currentStep < TOTAL_STEPS ? (
+            <button
+              type="button"
+              id="wizard-next-btn"
+              onClick={handleNext}
+              className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs sm:text-sm transition-all shadow-md shadow-emerald-500/20 active:scale-98 cursor-pointer"
+            >
+              <span>Next</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              id="create-profile-btn"
+              onClick={handleNext}
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-bold text-xs sm:text-sm transition-all shadow-lg shadow-emerald-500/25 active:scale-98 cursor-pointer"
+            >
+              <CheckCircle2 className="w-4 h-4" />
+              <span>Create My Career Profile</span>
+            </button>
+          )}
         </div>
-      </form>
+      </div>
     </div>
   );
 };

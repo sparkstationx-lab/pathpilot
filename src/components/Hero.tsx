@@ -49,7 +49,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onScrollToSection }) => 
           transition={{ duration: 0.4, delay: 0.2 }}
           className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed mb-8"
         >
-          PathPilot analyzes your skills, interests, and academic background using Gemini AI to generate match scores, eligibility assessments, and actionable skill gap recommendations for top internships, jobs, scholarships, and certifications.
+          Discover internships, jobs, scholarships, and certifications matched to your skills, with instant eligibility and gap analysis powered by Gemini AI.
         </motion.p>
 
         {/* Primary & Secondary CTAs */}

@@ -7,11 +7,11 @@ export const Capabilities: React.FC = () => {
     {
       id: 'cap-discover',
       title: 'Discover Opportunities',
-      tagline: 'Multi-category career discovery',
+      tagline: 'Multi-category discovery',
       icon: Search,
       accent: 'emerald',
       description:
-        'Find relevant internships, entry-level jobs, scholarships, and professional certifications tailored to your field of study and interests from a single hub.',
+        'Curated internships, jobs, scholarships, and certifications matched to your field of study.',
       bullets: [
         'Internships & early career jobs',
         'Academic & merit scholarships',
@@ -21,25 +21,25 @@ export const Capabilities: React.FC = () => {
     {
       id: 'cap-match',
       title: 'AI Match & Eligibility',
-      tagline: 'Transparent relevance & gap analysis',
+      tagline: 'Match & gap analysis',
       icon: Sparkles,
       accent: 'teal',
       description:
-        'Understand how well your current qualifications align with role requirements, discover your skill gaps, and see clear match breakdowns.',
+        'Transparent compatibility ratings, requirement alignment, and targeted skill gap identification.',
       bullets: [
-        'Skill & coursework requirement mapping',
-        'Actionable skill gap identification',
+        'Coursework & skill requirement mapping',
+        'Targeted skill gap identification',
         'Relevance scoring based on your profile',
       ],
     },
     {
       id: 'cap-apply',
       title: 'Application Assistance',
-      tagline: 'Tailored application material generation',
+      tagline: 'Tailored application suite',
       icon: FileText,
       accent: 'cyan',
       description:
-        'Generate personalized resume summaries, tailored cover letters, and targeted outreach emails specific to the opportunity you are applying for.',
+        'Role-specific resume summaries, targeted cover letters, and outreach emails tailored to the opportunity.',
       bullets: [
         'Role-specific resume summary points',
         'Customized student cover letters',
@@ -59,7 +59,7 @@ export const Capabilities: React.FC = () => {
             Designed for the Student Career Journey
           </h2>
           <p className="text-sm sm:text-base text-slate-400 mt-2">
-            Everything you need to find, evaluate, and prepare applications for relevant opportunities.
+            Discover, evaluate, and apply for relevant opportunities with AI.
           </p>
         </div>
 

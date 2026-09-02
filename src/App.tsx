@@ -34,11 +34,12 @@ const DEFAULT_PROFILE: StudentProfile = {
 
 export default function App() {
   const [currentView, setCurrentView] = useState<PageView>('landing');
+  const [previousView, setPreviousView] = useState<PageView>('landing');
   const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null);
   const [profile, setProfile] = useState<StudentProfile>(DEFAULT_PROFILE);
   const [cachedAnalyses, setCachedAnalyses] = useState<Record<string, AIMatchAnalysis>>({});
 
-  // Load profile from localStorage on mount
+  // Load profile from localStorage on mount & view transitions
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -57,8 +58,17 @@ export default function App() {
     }
   }, [currentView]);
 
+  const handleNavigate = (view: PageView) => {
+    if (view === 'profile') {
+      setPreviousView(currentView !== 'profile' ? currentView : 'landing');
+    }
+    setCurrentView(view);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleSelectOpportunity = (opp: Opportunity) => {
     setSelectedOpportunity(opp);
+    setPreviousView(currentView);
     setCurrentView('opportunity-detail');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -80,28 +90,25 @@ export default function App() {
     }
   };
 
+  // Determine which background page to render if modal popup is active
+  const effectiveBackgroundView = currentView === 'profile' ? previousView : currentView;
+
   return (
     <div className="min-h-screen bg-[#090d16] text-slate-100 flex flex-col selection:bg-emerald-500/30 selection:text-emerald-200">
       {/* Navigation Header */}
       <Navbar
         currentView={currentView}
-        onNavigate={(view) => {
-          setCurrentView(view);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
+        onNavigate={handleNavigate}
         onScrollToSection={scrollToSection}
       />
 
       {/* Main Content View */}
       <main className="flex-1">
-        {currentView === 'landing' && (
+        {effectiveBackgroundView === 'landing' && (
           <div>
             {/* Hero Section */}
             <Hero
-              onNavigate={(view) => {
-                setCurrentView(view);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
+              onNavigate={handleNavigate}
               onScrollToSection={scrollToSection}
             />
 
@@ -113,18 +120,48 @@ export default function App() {
 
             {/* How It Works Section */}
             <HowItWorks
-              onNavigate={(view) => {
-                setCurrentView(view);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
+              onNavigate={handleNavigate}
             />
           </div>
         )}
 
+        {effectiveBackgroundView === 'dashboard' && (
+          <AICareerDashboard
+            profile={profile}
+            opportunities={OPPORTUNITIES}
+            cachedAnalyses={cachedAnalyses}
+            onSelectOpportunity={handleSelectOpportunity}
+            onNavigateToProfile={() => handleNavigate('profile')}
+            onNavigateToOpportunities={() => handleNavigate('opportunities')}
+            onNavigate={handleNavigate}
+          />
+        )}
+
+        {effectiveBackgroundView === 'opportunities' && (
+          <OpportunitiesList
+            opportunities={OPPORTUNITIES}
+            profile={profile}
+            cachedAnalyses={cachedAnalyses}
+            onSelectOpportunity={handleSelectOpportunity}
+            onNavigateToProfile={() => handleNavigate('profile')}
+            onNavigateToDashboard={() => handleNavigate('dashboard')}
+          />
+        )}
+
+        {effectiveBackgroundView === 'opportunity-detail' && selectedOpportunity && (
+          <OpportunityDetail
+            opportunity={selectedOpportunity}
+            profile={profile}
+            onBack={() => handleNavigate('opportunities')}
+            onEditProfile={() => handleNavigate('profile')}
+          />
+        )}
+
+        {/* Multi-Step Career Profile Popup / Wizard Modal */}
         {currentView === 'profile' && (
           <CareerProfile
             onBack={() => {
-              setCurrentView('landing');
+              setCurrentView(previousView);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             onExploreOpportunities={() => {
@@ -137,67 +174,11 @@ export default function App() {
             }}
           />
         )}
-
-        {currentView === 'dashboard' && (
-          <AICareerDashboard
-            profile={profile}
-            opportunities={OPPORTUNITIES}
-            cachedAnalyses={cachedAnalyses}
-            onSelectOpportunity={handleSelectOpportunity}
-            onNavigateToProfile={() => {
-              setCurrentView('profile');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            onNavigateToOpportunities={() => {
-              setCurrentView('opportunities');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            onNavigate={(view) => {
-              setCurrentView(view);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-          />
-        )}
-
-        {currentView === 'opportunities' && (
-          <OpportunitiesList
-            opportunities={OPPORTUNITIES}
-            profile={profile}
-            cachedAnalyses={cachedAnalyses}
-            onSelectOpportunity={handleSelectOpportunity}
-            onNavigateToProfile={() => {
-              setCurrentView('profile');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            onNavigateToDashboard={() => {
-              setCurrentView('dashboard');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-          />
-        )}
-
-        {currentView === 'opportunity-detail' && selectedOpportunity && (
-          <OpportunityDetail
-            opportunity={selectedOpportunity}
-            profile={profile}
-            onBack={() => {
-              setCurrentView('opportunities');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            onEditProfile={() => {
-              setCurrentView('profile');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-          />
-        )}
       </main>
 
       {/* Footer */}
       <Footer
-        onNavigate={(view) => {
-          setCurrentView(view);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
+        onNavigate={handleNavigate}
         onScrollToSection={scrollToSection}
       />
     </div>
